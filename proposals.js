@@ -15,8 +15,32 @@ const buttons = [...document.querySelectorAll('[data-proposal]')];
 const parameterValues = document.querySelector('#parameter-values');
 const parameterLoading = document.querySelector('#parameter-loading');
 const adjustButton = document.querySelector('#adjust-parameters');
+const header = document.querySelector('.gallery-header');
+const galleryPanel = document.querySelector('#gallery-panel');
+const toggleButton = document.querySelector('#toggle-proposals');
+const mobile = matchMedia('(max-width: 760px), (hover: none) and (pointer: coarse)');
 let active;
 let paused = false;
+
+function setPanelOpen(open) {
+  galleryPanel.hidden = !open;
+  header.dataset.expanded = String(open);
+  toggleButton.setAttribute('aria-expanded', String(open));
+  toggleButton.setAttribute('aria-label', `${open ? 'Ocultar' : 'Mostrar'} las siete propuestas`);
+  if (!open && galleryPanel.contains(document.activeElement)) toggleButton.focus({ preventScroll: true });
+}
+toggleButton.addEventListener('click', () => setPanelOpen(galleryPanel.hidden));
+mobile.addEventListener('change', () => setPanelOpen(!mobile.matches));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !galleryPanel.hidden) {
+    setPanelOpen(false);
+    toggleButton.focus({ preventScroll: true });
+  }
+});
+document.addEventListener('pointerdown', event => {
+  if (mobile.matches && !header.contains(event.target)) setPanelOpen(false);
+});
+setPanelOpen(!mobile.matches);
 
 function choose(id, { initial = false, fromHistory = false } = {}) {
   const proposal = proposals.find(item => item.id === id) || proposals[0];
@@ -25,6 +49,10 @@ function choose(id, { initial = false, fromHistory = false } = {}) {
   buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.proposal === proposal.id)));
   document.querySelector('#proposal-count').textContent = `${index + 1} / ${proposals.length}`;
   document.querySelector('#proposal-count').setAttribute('aria-label', `Propuesta ${index + 1} de ${proposals.length}`);
+  const currentName = document.querySelector('#current-proposal');
+  currentName.textContent = proposal.name;
+  currentName.title = `Propuesta ${index + 1} de ${proposals.length}: ${proposal.name}`;
+  if (mobile.matches) setPanelOpen(false);
   frame.title = `${proposal.name} — propuesta completa`;
   document.title = `Ordzson · ${proposal.name} · ${index + 1} de ${proposals.length}`;
   status.textContent = `Propuesta ${index + 1} de ${proposals.length}: ${proposal.name}.`;
@@ -42,6 +70,7 @@ function choose(id, { initial = false, fromHistory = false } = {}) {
   const source = new URL(`proposals/${proposal.family}/`, location.href);
   if (proposal.key) source.searchParams.set(proposal.key, proposal.world);
   source.searchParams.set('embed', '1');
+  source.searchParams.set('v', '2');
   source.searchParams.set('proposal', proposal.id);
   for (const key of parameterNames) {
     const value = url.searchParams.get(key);
@@ -56,6 +85,7 @@ function choose(id, { initial = false, fromHistory = false } = {}) {
 document.querySelector('.proposal-picker').addEventListener('click', event => {
   const button = event.target.closest('button[data-proposal]');
   if (button && button.dataset.proposal !== active.id) choose(button.dataset.proposal);
+  else if (button && mobile.matches) setPanelOpen(false);
 });
 document.querySelector('.proposal-picker').addEventListener('keydown', event => {
   const current = buttons.indexOf(event.target);
@@ -76,7 +106,10 @@ function step(direction) {
 document.querySelector('#previous').addEventListener('click', () => step(-1));
 document.querySelector('#next').addEventListener('click', () => step(1));
 document.querySelector('#retry').addEventListener('click', () => choose(active.id, { fromHistory: true }));
-adjustButton.addEventListener('click', () => reply({ type: 'ordzson:parameters' }));
+adjustButton.addEventListener('click', () => {
+  if (mobile.matches) setPanelOpen(false);
+  reply({ type: 'ordzson:parameters' });
+});
 window.addEventListener('popstate', () => choose(new URLSearchParams(location.search).get('proposal'), { fromHistory: true }));
 
 function reply(message) {
@@ -85,6 +118,11 @@ function reply(message) {
 window.addEventListener('message', async event => {
   if (event.origin !== location.origin || event.source !== frame.contentWindow || event.data?.proposal !== active.id) return;
   const { type, values } = event.data;
+  if (mobile.matches && (type === 'ordzson:interact' || type === 'ordzson:scroll' && event.data.y > 24 && event.data.delta > 0)) setPanelOpen(false);
+  if (type === 'ordzson:dismiss' && !galleryPanel.hidden) {
+    setPanelOpen(false);
+    toggleButton.focus({ preventScroll: true });
+  }
   if (type === 'ordzson:ready') reply({ type: 'ordzson:motion', paused });
   if (type === 'ordzson:motion-state') paused = Boolean(event.data.paused);
   if (type === 'ordzson:state' && values && typeof values === 'object') {

@@ -1,6 +1,6 @@
 # OrdzsonDevPage · Siete propuestas
 
-Comparador de las siete propuestas seleccionadas para Ordzson. Abre con **Frutiger Aero · Panorama**. El selector superior muestra todas las alternativas y los botones **Anterior / Siguiente** recorren la colección.
+Comparador de las siete propuestas seleccionadas para Ordzson. Abre con **Frutiger Aero · Panorama**. El selector superior reúne todas las alternativas y los botones **Anterior / Siguiente** recorren la colección. En móvil, la barra compacta muestra la propuesta activa: **Propuestas (7)** abre el selector y sus parámetros. Se recoge al elegir una opción, desplazarse por la página, tocar su contenido o pulsar Escape.
 
 Vista previa: <http://localhost:4173/>.
 
@@ -26,7 +26,7 @@ Los valores proceden de los seis enlaces elegidos por el usuario. Cada familia m
 
 La franja **Parámetros actuales** muestra los nombres y valores de la propuesta activa y se actualiza al mover sus controles. **Ajustar parámetros** abre su panel de edición; los controles flotantes originales también siguen disponibles. Los cambios se conservan por propuesta en el navegador. **Restablecer** recupera los valores de esta tabla. **Copiar enlace** comparte la página unificada con la propuesta y sus ajustes actuales; si el portapapeles está bloqueado, esos valores ya están disponibles en la barra de direcciones.
 
-Cristales de luz ocupa la cuarta posición de siete. La selección admite teclado, navegación atrás/adelante y enlaces directos. La pausa se mantiene al cambiar de familia. El movimiento reducido del sistema se respeta al cargar cada propuesta. El selector queda visible mientras se recorre la página de cada alternativa.
+Cristales de luz ocupa la cuarta posición de siete. La selección admite teclado, navegación atrás/adelante y enlaces directos. La pausa se mantiene al cambiar de familia. El movimiento reducido del sistema se respeta al cargar cada propuesta. El acceso al selector permanece disponible mientras se recorre cada alternativa. En escritorio se puede recoger manualmente; en móvil comienza recogido y se abre sobre la propuesta sin reducir su espacio.
 
 ## Archivos y GitHub Pages
 

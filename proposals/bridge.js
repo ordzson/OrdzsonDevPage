@@ -18,6 +18,28 @@
     send({ type: 'ordzson:state', values, entries, preset: current.preset });
   };
   const motionButton = () => document.querySelector('#pause, #motion-toggle');
+  let lastScrollY = scrollY;
+  let scrollFrame = 0;
+  let scrollReported = false;
+  let scrollIdle = 0;
+  window.addEventListener('scroll', () => {
+    clearTimeout(scrollIdle);
+    scrollIdle = setTimeout(() => { scrollReported = false; }, 120);
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(() => {
+      scrollFrame = 0;
+      const delta = scrollY - lastScrollY;
+      if (!scrollReported && scrollY > 24 && delta > 0) {
+        send({ type: 'ordzson:scroll', y: scrollY, delta });
+        scrollReported = true;
+      }
+      lastScrollY = scrollY;
+    });
+  }, { passive: true });
+  document.addEventListener('pointerdown', () => send({ type: 'ordzson:interact' }), { passive: true });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') send({ type: 'ordzson:dismiss' });
+  });
   document.addEventListener('input', event => {
     if (event.target.matches('input[type="range"]')) queueMicrotask(publish);
   });
