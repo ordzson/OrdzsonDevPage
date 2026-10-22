@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cuatro exploraciones interactivas de partículas para Ordzson: Órbita, Seda, Vector y Frutiger Aero.">
+  <title>Ordzson · Cuatro mundos de partículas</title>
+  <link rel="preload" href="../atlas/assets/manrope-regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="studies.css">
+  <script src="studies.js" defer></script>
+  <link rel="stylesheet" href="../embedded.css">
+  <script src="../bridge.js" defer></script>
+</head>
+<body data-world="orbita">
+  <a class="skip" href="#contenido">Ir al contenido</a>
+  <header class="explorer" aria-label="Explorador de propuestas">
+    <a class="explorer-back" href="../particles/" aria-label="Volver a la propuesta anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg><span>Exploraciones</span></a>
+    <nav class="worlds" aria-label="Elegir propuesta">
+      <button data-look="orbita" aria-pressed="true"><span>01</span> Órbita</button>
+      <button data-look="seda" aria-pressed="false"><span>02</span> Seda</button>
+      <button data-look="vector" aria-pressed="false"><span>03</span> Vector</button>
+      <button data-look="aero" aria-pressed="false"><span>04</span> Aero</button>
+    </nav>
+    <span class="explorer-count" id="look-kind">Perlas orbitales</span>
+  </header>
+
+  <main id="contenido">
+    <div class="stage" id="stage">
+      <img class="aero-landscape" src="assets/aero-landscape.png" width="1536" height="1024" alt="" aria-hidden="true" decoding="async">
+      <canvas id="field" aria-hidden="true"></canvas>
+      <header class="site-header">
+        <a class="wordmark" href="#contenido" aria-label="Ordzson, inicio">Ordzson<span class="brand-dot" aria-hidden="true">.</span></a>
+        <nav aria-label="Principal"><a href="#trabajo">Trabajo</a><a href="#servicios">Servicios</a><a href="#contacto">Contacto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 12-12M6 6h12v12"/></svg></a></nav>
+      </header>
+      <section class="hero" aria-labelledby="offer">
+        <div class="hero-copy" id="hero-copy">
+          <h1 id="offer"><span>Tu proyecto web,</span> <span>de principio a fin.</span></h1>
+          <p class="offer">Páginas web, tiendas en línea y sistemas a medida.<br><span>Un único responsable, trato directo.</span></p>
+          <a class="contact-button" href="#contacto">Hablemos de tu proyecto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+        </div>
+        <div class="world-note" aria-hidden="true"><span id="world-note">Movimiento en equilibrio.</span><svg viewBox="0 0 24 24"><path d="M12 4v16m-5-5 5 5 5-5"/></svg></div>
+      </section>
+      <section class="work" id="trabajo" aria-labelledby="work-title">
+        <div class="work-heading"><h2 id="work-title">Trabajo seleccionado</h2><span>Ideas que toman forma.</span></div>
+        <div class="project-grid">
+          <article class="project project-bamboo">
+            <a class="project-image" href="https://www.bamboo.salon/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Bamboo Salon, abre en otra pestaña"><img src="../atlas/assets/bamboo.png" width="1440" height="1000" alt="Sitio web de Bamboo Salon con tienda y acceso a citas."></a>
+            <div class="project-info"><h3>Bamboo Salon</h3><a href="https://www.bamboo.salon/" target="_blank" rel="noopener noreferrer" aria-label="Ver Bamboo Salon, abre en otra pestaña">Ver proyecto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 12-12M6 6h12v12"/></svg></a></div>
+          </article>
+          <article class="project project-lirios">
+            <a class="project-image" href="https://ordzson.github.io/Lirios/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Lirios, abre en otra pestaña"><img src="../atlas/assets/lirios.png" width="1440" height="1000" alt="Catálogo de Lirios con flores artesanales tejidas."></a>
+            <div class="project-info"><div class="project-title"><h3>Lirios</h3><span class="project-status">En desarrollo</span></div><a href="https://ordzson.github.io/Lirios/" target="_blank" rel="noopener noreferrer" aria-label="Ver Lirios, abre en otra pestaña">Ver proyecto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 12-12M6 6h12v12"/></svg></a></div>
+          </article>
+        </div>
+      </section>
+    </div>
+    <section class="services" id="servicios" aria-labelledby="services-title"><h2 id="services-title">Soluciones web<br>para tu negocio.</h2><ul><li>Páginas web</li><li>Tiendas en línea</li><li>Sistemas a medida</li></ul></section>
+    <footer id="contacto"><h2>Hablemos de tu proyecto.</h2><p>Un único responsable, trato directo.</p><a href="#contenido">Volver arriba<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer>
+  </main>
+
+  <aside class="parameter-dock" aria-label="Ajustes de la propuesta">
+    <details id="parameters" open>
+      <summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h8m5 0h3M4 17h3m5 0h8"/><circle cx="14" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg><span>Parámetros · <span id="parameter-name">Órbita</span></span><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary>
+      <div class="parameter-content"><p class="parameter-description" id="look-description">Perlas luminosas, órbitas lentas y espacio para respirar.</p><div id="parameter-fields"></div><div class="parameter-actions"><button id="reset" type="button">Restablecer</button><button id="copy-link" type="button">Copiar enlace<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 14 4-4m-6 1-2 2a3.5 3.5 0 0 0 5 5l2-2m-2-8 2-2a3.5 3.5 0 0 1 5 5l-2 2"/></svg></button></div><p class="save-note" id="save-note" aria-live="polite">Tus ajustes se guardan por propuesta.</p></div>
+    </details>
+    <button class="motion-toggle" id="motion-toggle" aria-label="Pausar animación" aria-pressed="false"><svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg><svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><span id="motion-label">Pausar</span></button>
+  </aside>
+  <noscript><p class="noscript-note">Activa JavaScript para explorar las partículas y ajustar las propuestas.</p></noscript>
+</body>
+</html>

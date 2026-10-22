@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Exploración visual de Ordzson: cristales de luz de colores suspendidos sobre negro.">
+  <title>Ordzson · Cristales de luz</title>
+  <link rel="preload" href="../atlas/assets/manrope-regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script src="particles.js" defer></script>
+  <link rel="stylesheet" href="../embedded.css">
+  <script src="../bridge.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Ir al contenido</a>
+  <div class="opening" id="opening">
+    <canvas class="particle-field" id="particles" aria-hidden="true"></canvas>
+    <canvas class="grain-field" id="grain" aria-hidden="true"></canvas>
+    <header class="site-header">
+      <a class="wordmark" href="#" aria-label="Ordzson, inicio">ORDZSON</a>
+      <nav aria-label="Principal">
+        <a href="#trabajo">Trabajo</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#contacto">Contacto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+      </nav>
+    </header>
+    <main id="contenido">
+      <section class="hero" aria-labelledby="offer">
+        <h1 id="offer">Tu proyecto web,<br>de principio a fin.</h1>
+        <p class="offer">Páginas web, tiendas en línea y sistemas a medida.<br><span>Un único responsable, trato directo.</span></p>
+        <a class="contact-button" href="#contacto">Hablemos de tu proyecto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+      </section>
+      <section class="work" id="trabajo" aria-label="Proyectos">
+        <article class="project project-bamboo">
+          <a class="project-image" href="https://www.bamboo.salon/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Bamboo Salon, abre en otra pestaña">
+            <img src="../atlas/assets/bamboo.png" width="1440" height="1000" alt="Bamboo Salon: sitio de belleza con acceso a citas y tienda.">
+          </a>
+          <div class="project-info"><h2>Bamboo Salon</h2><a href="https://www.bamboo.salon/" target="_blank" rel="noopener noreferrer" aria-label="Ver Bamboo Salon, abre en otra pestaña">Ver proyecto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></div>
+        </article>
+        <article class="project project-lirios">
+          <a class="project-image" href="https://ordzson.github.io/Lirios/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Lirios, abre en otra pestaña">
+            <img src="../atlas/assets/lirios.png" width="1440" height="1000" alt="Lirios: catálogo de flores artesanales, con un ramo tejido en tonos amarillos.">
+          </a>
+          <div class="project-info"><div class="project-title"><h2>Lirios</h2><span class="project-status">En desarrollo</span></div><a href="https://ordzson.github.io/Lirios/" target="_blank" rel="noopener noreferrer" aria-label="Ver Lirios, abre en otra pestaña">Ver proyecto<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></div>
+        </article>
+      </section>
+      <ol class="process" aria-label="Proceso de trabajo">
+        <li><span>01</span>Requerimientos</li><li><span>02</span>Diseño</li><li><span>03</span>Desarrollo</li><li><span>04</span>Implementación</li>
+      </ol>
+    </main>
+  </div>
+  <section class="services" id="servicios" aria-labelledby="services-title">
+    <h2 id="services-title">Soluciones web<br>para tu negocio.</h2>
+    <ul><li>Páginas web</li><li>Tiendas en línea</li><li>Sistemas a medida</li></ul>
+  </section>
+  <footer id="contacto"><h2>Hablemos de tu proyecto.</h2><p>Un único responsable, trato directo.</p><a class="back-top" href="#">Volver arriba<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer>
+  <aside class="preview-controls" aria-label="Controles de la propuesta animada">
+    <div class="presets" role="group" aria-label="Estilo de los fragmentos de vidrio">
+      <button class="preset" data-preset="prisma" aria-pressed="true">Prisma</button>
+      <button class="preset" data-preset="cristal" aria-pressed="false">Cristal</button>
+      <button class="preset" data-preset="flujo" aria-pressed="false">Flujo</button>
+    </div>
+    <button class="motion-toggle" id="motion-toggle" aria-pressed="false" aria-label="Pausar animación"><svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg><svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg></button>
+    <details class="tuning"><summary aria-label="Ajustar el fondo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></summary><div class="tuning-panel"><p>Ajustar el fondo</p><label for="density"><span>Fragmentos <output id="value-density" for="density">65</output></span><input id="density" type="range" min="20" max="100" value="65"></label><label for="grain-level"><span>Grano <output id="value-grain" for="grain-level">12</output></span><input id="grain-level" type="range" min="0" max="100" value="12"></label><label for="light-level"><span>Luz <output id="value-light" for="light-level">10</output></span><input id="light-level" type="range" min="0" max="100" value="10"></label><div class="shard-actions"><button id="reset" type="button">Restablecer</button><button id="copy-link" type="button">Copiar enlace</button></div><p id="save-note" role="status" aria-live="polite"></p><span class="motion-note" id="motion-note">Responde al cursor</span></div></details>
+  </aside>
+</body>
+</html>

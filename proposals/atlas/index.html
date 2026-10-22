@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Cuatro nuevas propuestas de Ordzson: órbita espacial, luz fotográfica, corriente digital y Frutiger Aero. Partículas y parámetros interactivos.">
+  <meta name="theme-color" content="#111719">
+  <title>Ordzson · Cuatro mundos de partículas</title>
+  <link rel="preload" href="assets/manrope-regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+  <link rel="stylesheet" href="../embedded.css">
+  <script src="../bridge.js" defer></script>
+</head>
+<body data-world="orbit">
+  <a class="skip-link" href="#contenido">Ir al contenido</a>
+  <div class="studio" aria-label="Comparador de propuestas">
+    <a class="studio-brand" href="../particles/" aria-label="Volver a la propuesta anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="11" ry="5" transform="rotate(-35 12 12)"/></svg><span>Exploraciones</span></a>
+    <nav class="world-picker" aria-label="Propuesta visual">
+      <button data-world="orbit" aria-pressed="true">Órbita</button>
+      <button data-world="halation" aria-pressed="false">Halation</button>
+      <button data-world="current" aria-pressed="false">Corriente</button>
+      <button data-world="aero" aria-pressed="false">Aero</button>
+    </nav>
+    <div class="studio-actions">
+      <button id="pause" aria-label="Pausar partículas" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="pause-path" d="M9 5v14m6-14v14"/><path class="play-path" d="m8 5 11 7-11 7Z"/></svg></button>
+      <button id="parameters" aria-expanded="false" aria-controls="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h6m5 0h5M4 17h11m4 0h1"/><circle cx="12" cy="7" r="2"/><circle cx="17" cy="17" r="2"/></svg><span>Parámetros</span></button>
+    </div>
+  </div>
+  <aside id="settings" class="settings" aria-label="Parámetros de partículas" hidden>
+    <div class="settings-heading"><div><h2 id="settings-title">Órbita</h2><p id="settings-description"></p></div><button id="close-settings" aria-label="Cerrar parámetros"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <form id="sliders"></form>
+    <p class="settings-note" id="motion-note">Los ajustes se guardan para esta propuesta.</p>
+    <div class="settings-actions"><button id="reset">Restablecer</button><button id="share">Copiar enlace</button></div>
+    <p class="settings-feedback" id="feedback" role="status" aria-live="polite"></p>
+  </aside>
+  <div id="site"></div>
+  <noscript><main class="no-script"><h1>Cuatro mundos para Ordzson.</h1><p>Activa JavaScript para explorar las cuatro propuestas y sus controles de partículas.</p><a href="../particles/">Ver la propuesta anterior</a></main></noscript>
+</body>
+</html>

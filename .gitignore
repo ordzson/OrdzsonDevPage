@@ -1,0 +1,18 @@
+# Local agent settings and visual exploration artifacts.
+.agents/
+.aws/
+.codex/
+.impeccable/
+.vscode/
+PRODUCT.md
+DESIGN.md
+*.prompt.txt
+
+# Local dependencies, logs and operating-system metadata.
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
