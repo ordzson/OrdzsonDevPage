@@ -1,4 +1,4 @@
-import { ParticleField } from './field.js?v=18';
+import { ParticleField } from './field.js?v=19';
 import { AeroBackdrop } from './aero-backdrops.js?v=5';
 
 const icons = {
@@ -58,15 +58,19 @@ function markup(world) {
 }
 
 function updatePause() {
-  const stop = paused || reduced.matches;
+  // Under reduced motion Panorama's bubbles keep a slower ascent and the pause
+  // button stays available; the backdrop and the other studies stay still.
+  const calm = reduced.matches && active === 'aero';
+  const locked = reduced.matches && !calm;
+  const stop = paused || locked;
   const button = document.querySelector('#pause');
   button.setAttribute('aria-pressed', String(stop));
-  button.setAttribute('aria-label', reduced.matches ? 'Movimiento reducido activado' : stop ? 'Reanudar partículas' : 'Pausar partículas');
-  button.disabled = reduced.matches;
-  document.querySelector('#motion-note').textContent = reduced.matches ? 'Movimiento reducido: composición estática. Puedes ajustar sus parámetros.' : 'Los ajustes se guardan para esta propuesta.';
-  if (field) field.setPaused(stop);
-  backdrop?.setPaused(stop);
-  if (active === 'aero') button.setAttribute('aria-label', reduced.matches ? 'Movimiento reducido activado' : stop ? 'Reanudar animación' : 'Pausar animación');
+  button.setAttribute('aria-label', locked ? 'Movimiento reducido activado' : stop ? 'Reanudar partículas' : 'Pausar partículas');
+  button.disabled = locked;
+  document.querySelector('#motion-note').textContent = locked ? 'Movimiento reducido: composición estática. Puedes ajustar sus parámetros.' : calm ? 'Movimiento reducido: las burbujas suben más despacio y el fondo queda fijo.' : 'Los ajustes se guardan para esta propuesta.';
+  if (field) { field.setCalm(calm); field.setPaused(stop); }
+  backdrop?.setPaused(paused || reduced.matches);
+  if (active === 'aero') button.setAttribute('aria-label', stop ? 'Reanudar animación' : 'Pausar animación');
 }
 const glassParameters = { glassTransparency: 'Transparencia', glassBlur: 'Desenfoque', glassSaturation: 'Saturación del cristal', bubbleColor: 'Color de burbujas' };
 function parameterText(key, value) {

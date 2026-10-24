@@ -175,7 +175,6 @@ export class AeroLenses {
     this.layer.append(burst);
     const effect = { stop: () => {
       cancelAnimationFrame(effect.frame);
-      effect.animation?.cancel();
       burst.remove();
       effect.spray?.remove();
       this.bursts.delete(effect);
@@ -184,13 +183,7 @@ export class AeroLenses {
     // Repeated taps never leave an unbounded pile of canvases or callbacks.
     if (this.bursts.size >= 6) this.bursts.values().next().value.stop();
     this.bursts.add(effect);
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) {
-      effect.animation = burst.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 90, fill: 'forwards' });
-      effect.animation.finished.then(effect.stop, effect.stop);
-      return;
-    }
-
+    // A deliberate, brief tear; reduced motion keeps the same pop as elsewhere.
     const diameter = lens.diameter, radius = diameter / 2;
     const hitX = contact.x * diameter, hitY = contact.y * diameter;
     const reach = radius + Math.hypot(hitX - radius, hitY - radius);
