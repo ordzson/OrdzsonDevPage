@@ -49,6 +49,21 @@ test('approaching bubbles exchange velocity and bounce apart', () => {
   assert.ok(field.bodies[0].vx < 0 && field.bodies[1].vx > 0);
 });
 
+test('a packed contact chain keeps rising when the collision solver exhausts its passes', () => {
+  const field = fixture(3, 120 / .98, 300);
+  field.bodies.forEach((body, index) => Object.assign(body, {
+    x: 20 + field.gap + index * (40 + field.gap), y: 150, r: 20,
+    vx: index === 0 ? 15 : -15, vy: -10, drift: 0, rise: 10
+  }));
+  for (let frame = 0; frame < 60; frame++) {
+    const previous = field.bodies.map(body => body.y);
+    field.step(1 / 60);
+    check(field);
+    field.bodies.forEach((body, index) => assert.ok(body.y < previous[index], 'A contact chain must never freeze the field'));
+  }
+  assert.ok(field.bodies.every(body => body.y < 141));
+});
+
 test('side walls reflect velocity while the top remains open', () => {
   const field = fixture(1, 400, 300), body = field.bodies[0];
   Object.assign(body, { x: 23, y: 23, r: 20, vx: -15, vy: -15 });
@@ -85,15 +100,15 @@ test('bubbles recycle only when fully out of view and reenter without overlap', 
   assert.ok(bubble.y < field.height + bubble.r, 'Recycled bubbles enter the frame');
 });
 
-test('every default bubble keeps circulating through multiple ascents', () => {
-  for (const width of [390, 1440]) {
-    const field = fixture(width === 390 ? 13 : 19, width, 650);
+test('bubbles keep circulating at the published section sizes and high density', () => {
+  for (const [width, height, count] of [[337, 495, 11], [390, 495, 11], [1440, 417, 17], [320, 495, 31], [768, 417, 45]]) {
+    const field = fixture(count, width, height);
     const cycles = field.bodies.map(() => 0);
     for (let frame = 0; frame < 6000; frame++) {
       const previous = field.bodies.map(body => body.y);
       field.step(.1);
       check(field);
-      field.bodies.forEach((body, i) => { if (body.y - previous[i] > 650) cycles[i]++; });
+      field.bodies.forEach((body, i) => { if (body.y - previous[i] > height) cycles[i]++; });
     }
     assert.ok(cycles.every(count => count >= 2), `Every bubble must complete multiple ascents at ${width}px: ${cycles}`);
   }

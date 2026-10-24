@@ -1,4 +1,4 @@
-import { AeroBubbleSprites } from './aero-bubble-sprites.js?v=1';
+import { AeroBubbleSprites } from './aero-bubble-sprites.js?v=2';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const REFERENCE_DIAMETER = 192;
@@ -99,7 +99,7 @@ export class AeroLenses {
     });
   }
 
-  update({ light, character, bubbleColor: color = 72, glassBlur = 20, glassSaturation = 65 }) {
+  update({ light, character, bubbleColor: color = 10, glassBlur = 25, glassSaturation = 55 }) {
     const flat = character === 0 && document.body.dataset.aeroTheme === 'light';
     if (flat !== this.flat) {
       this.clearBursts();

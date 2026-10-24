@@ -1,4 +1,4 @@
-import { ParticleField } from './field.js?v=17';
+import { ParticleField } from './field.js?v=18';
 import { AeroBackdrop } from './aero-backdrops.js?v=5';
 
 const icons = {
@@ -10,8 +10,9 @@ const worlds = {
   orbit: { name: 'Órbita', subtitle: 'Polvo estelar · perspectiva orbital', detail: 'Una órbita de luz. Un espacio para tus ideas.', defaults: { density: 100, size: 65, speed: 38, light: 96, interaction: 100, character: 50 }, character: 'Inclinación', labels: ['Dispersa', 'Densa'], color: '#111719' },
   halation: { name: 'Halation', subtitle: 'Bokeh fotográfico · luz desenfocada', detail: 'Luz, profundidad y una mirada diferente.', defaults: { density: 35, size: 72, speed: 18, light: 67, interaction: 25, character: 68 }, character: 'Desenfoque', labels: ['Pocas luces', 'Más luces'], color: '#f2ede4' },
   current: { name: 'Corriente', subtitle: 'Nube de puntos · ondas continuas', detail: 'Ideas en movimiento. Desarrollo con dirección.', defaults: { density: 95, size: 38, speed: 17, light: 80, interaction: 100, character: 100 }, character: 'Amplitud', labels: ['Ligera', 'Envolvente'], color: '#e9f3ed' },
-  aero: { name: 'Frutiger Aero', subtitle: 'Burbujas de cristal · luz y transparencia', detail: 'El futuro se siente bien.', defaults: { density: 42, size: 68, speed: 45, light: 89, interaction: 35, character: 84, glassTransparency: 82, glassBlur: 20, glassSaturation: 65, bubbleColor: 72 }, character: 'Reflejos', labels: ['Despejado', 'Burbujeante'], color: '#d9f4ff' }
+  aero: { name: 'Frutiger Aero', subtitle: 'Burbujas de cristal · luz y transparencia', detail: 'El futuro se siente bien.', defaults: { density: 37, size: 68, speed: 45, light: 100, interaction: 0, character: 0, glassTransparency: 80, glassBlur: 25, glassSaturation: 55, bubbleColor: 10 }, character: 'Reflejos', labels: ['Despejado', 'Burbujeante'], color: '#d9f4ff' }
 };
+const legacyAeroDefaults = { density: 42, size: 68, speed: 45, light: 89, interaction: 35, character: 84, glassTransparency: 82, glassBlur: 20, glassSaturation: 65, bubbleColor: 72 };
 const site = document.querySelector('#site');
 const settings = document.querySelector('#settings');
 const controls = document.querySelector('#sliders');
@@ -22,6 +23,8 @@ const singleProposal = document.body.dataset.singleProposal;
 const assets = new URL('./assets/', import.meta.url);
 let stored = {};
 try { stored = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch {}
+// Replace only the untouched legacy preset; URL parameters still take priority.
+if (stored.aero && Object.entries(legacyAeroDefaults).every(([key, value]) => stored.aero[key] === value)) delete stored.aero;
 let active, field, backdrop, paused = false;
 
 function readValues(world) {
