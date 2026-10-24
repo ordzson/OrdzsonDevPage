@@ -40,6 +40,9 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 h1 { font-size: 12px; font-weight: 400; margin: 0; color: var(--gallery-muted); min-width: 0; }
 h1 strong { font-weight: 500; color: var(--gallery-ink); }
 .gallery-stepper { gap: 6px; flex-shrink: 0; }
+.brandmarks-link { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 10px; border: 1px solid #cdd7d0; border-radius: 6px; color: #314b3d; font-size: 12px; text-decoration: none; white-space: pre; }
+.brandmarks-link:hover { background: #e4eae4; }
+@media (max-width: 760px), (hover: none) and (pointer: coarse) { .brandmarks-link { min-width: 32px; min-height: 44px; padding: 0 8px; font-size: 12px; } .brandmarks-link span { display: none; } }
 .current-proposal { display: none; color: var(--gallery-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 [data-expanded="false"] .gallery-heading-label { display: none; }
 [data-expanded="false"] .current-proposal { display: block; }
@@ -50,7 +53,7 @@ h1 strong { font-weight: 500; color: var(--gallery-ink); }
 .gallery-stepper button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 32px; border: 1px solid #cdd7d0; border-radius: 6px; padding: 0 10px; background: transparent; color: #314b3d; font-size: 12px; }
 .gallery-stepper button:hover { background: #e4eae4; }
 .gallery-stepper button:active { transform: translateY(1px); }
-.proposal-picker { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.proposal-picker { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
 .proposal-picker button { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 45px; padding: 5px 8px 8px; border: 0; border-radius: 7px 7px 0 0; background: transparent; color: var(--gallery-muted); text-align: left; transition: background .18s, color .18s; }
 .proposal-picker button:hover { background: #e9ede7; color: #1b3027; }
 .proposal-picker button[aria-pressed="true"] { background: #e4ebe2; color: #203d2f; }
@@ -61,11 +64,12 @@ h1 strong { font-weight: 500; color: var(--gallery-ink); }
 .selected-check { display: none; margin-left: auto; width: 15px; height: 15px; }
 [aria-pressed="true"] .selected-check { display: block; }
 .proposal-swatch { display: block; width: 23px; height: 27px; border-radius: 4px; flex-shrink: 0; }
-.swatch-panorama { background: #a5ddf3 url('proposals/atlas/assets/aero-world.png') 56% 55% / auto 100%; }
+.swatch-panorama { background: linear-gradient(155deg, #eafaff 40%, #a5d6e9 60%, #e8f7de 61%, #b8db8b); box-shadow: inset 0 1px 2px #ffffffd9; }
 .swatch-cristal { background: #9bdded url('proposals/studies/assets/aero-landscape.png') 50% 55% / auto 100%; }
 .swatch-current { background: #174fdd; box-shadow: inset 0 -12px #daf291; }
 .swatch-orbit { background: #111719; }
 .swatch-vector { background: #e25b38; }
+.swatch-cobalto { background: #1738a6; box-shadow: inset 0 -8px #d6f36a; }
 .swatch-seda { background: #2c8363; }
 .swatch-shards { background: #060808; box-shadow: inset 0 -12px #36d9ef; }
 .current-parameters { display: flex; align-items: center; gap: 16px; min-height: 37px; border-top: 1px solid var(--gallery-line, #cdd7d0); }
@@ -74,11 +78,35 @@ h1 strong { font-weight: 500; color: var(--gallery-ink); }
 #parameter-values > div { display: flex; align-items: baseline; gap: 7px; }
 #parameter-values dt { font-size: 11px; color: var(--gallery-muted); }
 #parameter-values dd { margin: 0; font-size: 12px; color: var(--gallery-ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.parameter-palette { display: flex; align-items: center; gap: 4px; }
+.parameter-swatch { width: 14px; height: 14px; border: 1px solid #52605a; border-radius: 3px; }
 #adjust-parameters { display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 8px; border: 0; background: transparent; color: var(--gallery-accent); font-size: 12px; white-space: nowrap; margin-left: auto; }
 #adjust-parameters:hover { background: #e4eae4; border-radius: 5px; }
 #adjust-parameters:disabled { opacity: .55; cursor: default; }
 #adjust-parameters svg { width: 16px; height: 16px; }
 .proposal-stage { flex: 1; min-height: 0; position: relative; background: #d9f4ff; }
+.aero-backdrop-picker { display: flex; align-items: center; gap: 16px; min-height: 48px; border-top: 1px solid #cdd7d0; }
+.backdrop-label, .backdrop-description { font-size: 11px; color: var(--gallery-muted); }
+.backdrop-options { display: flex; gap: 4px; }
+.backdrop-options button { min-height: 40px; padding: 0 14px; border: 0; border-radius: 5px; background: transparent; color: var(--gallery-muted); font-size: 12px; }
+.backdrop-options button:hover { background: #e9ede7; }
+.backdrop-options button[aria-pressed="true"] { background: #e4ebe2; color: #203d2f; box-shadow: inset 0 -2px #276346; }
+.aurora-theme-picker { display: flex; gap: 2px; padding: 3px; margin-left: auto; border: 1px solid #cdd7d0; border-radius: 999px; flex-shrink: 0; }
+.aurora-theme-picker button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 34px; padding: 0 12px; border: 0; border-radius: 999px; color: var(--gallery-muted); background: transparent; font-size: 12px; }
+.aurora-theme-picker button:hover { background: #e9ede7; }
+.aurora-theme-picker button[aria-pressed="true"] { color: #203d2f; background: #e4ebe2; }
+.aurora-theme-picker svg { width: 15px; height: 15px; }
+@media (max-width: 1150px) { .backdrop-description { display: none; } }
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .aero-backdrop-picker { flex-wrap: wrap; gap: 0 8px; min-height: 48px; }
+  .backdrop-description { display: none; }
+  .backdrop-options { flex: 1; min-width: 0; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+  .backdrop-options button { flex: 1 0 auto; min-height: 44px; padding: 0 9px; font-size: 11px; white-space: nowrap; }
+  .backdrop-label { display: none; }
+  .aurora-theme-picker { flex-basis: 100%; margin: 2px 0 4px; padding: 0; border: 0; border-radius: 0; justify-content: center; }
+  .aurora-theme-picker button { min-height: 44px; padding: 0 23px; font-size: 11px; }
+  .gallery-header:has(.aero-backdrop-picker:not([hidden])) #gallery-panel { max-height: calc(100dvh - 153px); }
+}
 iframe { display: block; border: 0; width: 100%; height: 100%; }
 .preview-error { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; padding: 24px; background: #f6f7f4; text-align: center; }
 .preview-error button { min-height: 44px; padding: 0 18px; border: 1px solid #cdd7d0; border-radius: 6px; background: #263b33; color: #fff; }
@@ -89,7 +117,7 @@ iframe { display: block; border: 0; width: 100%; height: 100%; }
 @media (max-width: 1050px) {
   .gallery-header { padding: 7px 16px 0; }
   .proposal-picker button { gap: 8px; padding-left: 9px; padding-right: 9px; }
-  .proposal-swatch { width: 23px; height: 32px; }
+  .proposal-picker .proposal-swatch { display: none; }
   .proposal-label > span { font-size: 12px; }
   .selected-check { display: none !important; }
   .current-parameters { gap: 12px; }
@@ -136,3 +164,21 @@ iframe { display: block; border: 0; width: 100%; height: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
+
+/* The comparison controls follow Aurora's selected light. */
+body[data-aero-theme="dark"] {
+  --gallery-ink: #e3f0f6;
+  --gallery-muted: #b0c3cd;
+  --gallery-accent: #8bedd1;
+  background: #03070d;
+  color: var(--gallery-ink);
+  color-scheme: dark;
+}
+[data-aero-theme="dark"] :is(.gallery-header, #gallery-panel) { background: #080f17; border-color: #2c3e49; }
+[data-aero-theme="dark"] :is(.gallery-stepper button, .brandmarks-link) { color: #c0d7df; border-color: #2c3e49; }
+[data-aero-theme="dark"] :is(.current-parameters, .aero-backdrop-picker, .aurora-theme-picker) { border-color: #2c3e49; }
+[data-aero-theme="dark"] .gallery-brand span { color: #8bedd1; }
+[data-aero-theme="dark"] :is(.gallery-stepper button, .brandmarks-link, .proposal-picker button, .backdrop-options button, .aurora-theme-picker button, #adjust-parameters):hover { background: #182a33; color: #e3f0f6; }
+[data-aero-theme="dark"] :is(.proposal-picker button, .backdrop-options button, .aurora-theme-picker button)[aria-pressed="true"] { background: #193a35; color: #b6fce5; }
+[data-aero-theme="dark"] .proposal-picker button[aria-pressed="true"]::after { background: #8bedd1; }
+[data-aero-theme="dark"] .backdrop-options button[aria-pressed="true"] { box-shadow: inset 0 -2px #8bedd1; }

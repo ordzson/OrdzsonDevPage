@@ -52,9 +52,25 @@
       }
     }
   };
+  looks['vector-cobalto'] = {
+    ...looks.vector,
+    name: 'Vector · Cobalto', layout: 'vector', kind: 'Trazos · Hielo y lima',
+    description: 'La energía de Vector en azul cobalto, con trazos hielo y lima. Ajusta también su paleta.',
+    parameters: {
+      ...looks.vector.parameters,
+      background: { label: 'Fondo', type: 'color', value: '#1738a6' },
+      surface: { label: 'Secciones', type: 'color', value: '#102568' },
+      text: { label: 'Texto', type: 'color', value: '#f3f7ff' },
+      accent: { label: 'Acento', type: 'color', value: '#d6f36a' },
+      particle: { label: 'Trazo principal', type: 'color', value: '#ccefff' },
+      particleAccent: { label: 'Trazo secundario', type: 'color', value: '#d6f36a' }
+    }
+  };
+  const normalizeColor = value => typeof value === 'string' && /^#?[\da-f]{6}$/i.test(value) ? `#${value.replace('#', '').toLowerCase()}` : null;
   const defaults = id => Object.fromEntries(Object.entries(looks[id].parameters).map(([key, spec]) => [key, spec.value]));
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const normalize = (id, values) => Object.fromEntries(Object.entries(looks[id].parameters).map(([key, spec]) => {
+    if (spec.type === 'color') return [key, normalizeColor(values?.[key]) || spec.value];
     const value = typeof values?.[key] === 'number' && Number.isFinite(values[key]) ? values[key] : spec.value;
     const snapped = spec.min + Math.round((value - spec.min) / spec.step) * spec.step;
     return [key, +clamp(snapped, spec.min, spec.max).toFixed(3)];
@@ -65,8 +81,13 @@
   const query = new URLSearchParams(location.search);
   let world = Object.hasOwn(looks, query.get('look')) ? query.get('look') : 'orbita';
   const shared = {};
-  for (const key of Object.keys(looks[world].parameters)) {
-    if (query.has(key) && Number.isFinite(Number(query.get(key)))) shared[key] = Number(query.get(key));
+  for (const [key, spec] of Object.entries(looks[world].parameters)) {
+    const value = query.get(key);
+    if (value === null || value.trim() === '') continue;
+    if (spec.type === 'color') {
+      const color = normalizeColor(value);
+      if (color) shared[key] = color;
+    } else if (Number.isFinite(Number(value))) shared[key] = Number(value);
   }
   settings[world] = normalize(world, { ...settings[world], ...shared });
   let width = 0, height = 0, dpr = 1, particles = [], frame = 0;
@@ -76,7 +97,24 @@
   const pointer = { x: 0, y: 0, sx: 0, sy: 0, active: false };
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const wrap = (value, range) => ((value % range) + range) % range;
-  const format = (id, value) => new Intl.NumberFormat('es-GT', { maximumFractionDigits: 2 }).format(value) + looks[world].parameters[id].unit;
+  const format = (id, value) => looks[world].parameters[id].type === 'color' ? value.toUpperCase()
+    : new Intl.NumberFormat('es-GT', { maximumFractionDigits: 2 }).format(value) + looks[world].parameters[id].unit;
+  const paletteProperties = { background: '--ground', surface: '--panel', text: '--ink', accent: '--accent' };
+
+  function applyPalette() {
+    const s = settings[world];
+    for (const [key, property] of Object.entries(paletteProperties)) {
+      if (s[key]) document.body.style.setProperty(property, s[key]);
+      else document.body.style.removeProperty(property);
+    }
+    // Keep the action label readable as its accent color changes.
+    if (s.accent) {
+      const channels = s.accent.slice(1).match(/../g).map(hex => parseInt(hex, 16) / 255)
+        .map(value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
+      const luminance = channels[0] * .2126 + channels[1] * .7152 + channels[2] * .0722;
+      document.body.style.setProperty('--button-ink', luminance > .179 ? '#000000' : '#ffffff');
+    } else document.body.style.removeProperty('--button-ink');
+  }
 
   function persist() {
     try { localStorage.setItem(storageKey, JSON.stringify(settings)); }
@@ -84,15 +122,27 @@
   }
   function cleanUrl(id) {
     const url = new URL(location.href);
-    for (const key of Object.keys(looks[id].parameters)) url.searchParams.delete(key);
+    for (const look of Object.values(looks)) {
+      for (const key of Object.keys(look.parameters)) url.searchParams.delete(key);
+    }
     url.searchParams.set('look', id);
+    for (const [key, value] of Object.entries(settings[id])) url.searchParams.set(key, typeof value === 'string' ? value.slice(1) : value);
     history.replaceState(null, '', url);
   }
   function renderParameters() {
     fields.replaceChildren();
+    let colorFields;
     for (const [id, spec] of Object.entries(looks[world].parameters)) {
+      const color = spec.type === 'color';
+      if (color && !colorFields) {
+        colorFields = document.createElement('fieldset');
+        colorFields.className = 'color-parameters';
+        const legend = document.createElement('legend');
+        legend.textContent = 'Colores';
+        colorFields.append(legend); fields.append(colorFields);
+      }
       const label = document.createElement('label');
-      label.className = 'parameter-field';
+      label.className = `parameter-field${color ? ' color-field' : ''}`;
       label.htmlFor = `param-${id}`;
       const row = document.createElement('span');
       const text = document.createElement('span');
@@ -101,26 +151,31 @@
       output.htmlFor = `param-${id}`;
       output.textContent = format(id, settings[world][id]);
       const input = document.createElement('input');
-      Object.assign(input, { type: 'range', id: `param-${id}`, min: spec.min, max: spec.max, step: spec.step, value: settings[world][id] });
+      Object.assign(input, { type: color ? 'color' : 'range', id: `param-${id}` });
+      if (!color) Object.assign(input, { min: spec.min, max: spec.max, step: spec.step });
+      input.value = settings[world][id];
       input.dataset.parameter = id;
-      input.setAttribute('aria-valuetext', output.textContent);
+      if (!color) input.setAttribute('aria-valuetext', output.textContent);
       input.addEventListener('input', () => {
-        settings[world][id] = Number(input.value);
+        settings[world][id] = color ? input.value : Number(input.value);
         output.textContent = format(id, settings[world][id]);
-        input.setAttribute('aria-valuetext', output.textContent);
+        if (!color) input.setAttribute('aria-valuetext', output.textContent);
+        if (color) applyPalette();
         persist(); cleanUrl(world);
         if (ctx) {
           if (id === 'density') makeParticles();
           draw(0);
         }
       });
-      row.append(text, output); label.append(row, input); fields.append(label);
+      row.append(text, output); label.append(row, input); (color ? colorFields : fields).append(label);
     }
   }
   function choose(id) {
     if (!Object.hasOwn(looks, id)) return;
     world = id;
     document.body.dataset.world = id;
+    document.body.dataset.layout = looks[id].layout || id;
+    applyPalette();
     document.title = `Ordzson · ${looks[id].name} · Partículas`;
     document.querySelectorAll('[data-look]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.look === id)));
     document.querySelector('#look-kind').textContent = looks[id].kind;
@@ -135,7 +190,7 @@
   document.querySelectorAll('[data-look]').forEach(button => button.addEventListener('click', () => choose(button.dataset.look)));
   document.querySelector('#reset').addEventListener('click', () => {
     settings[world] = defaults(world);
-    persist(); cleanUrl(world); renderParameters();
+    persist(); applyPalette(); cleanUrl(world); renderParameters();
     if (ctx) { makeParticles(); draw(0); }
     saveNote.textContent = 'Valores originales restaurados.';
   });
@@ -144,10 +199,10 @@
     const url = new URL(location.href);
     url.search = '';
     url.searchParams.set('look', world);
-    for (const [key, value] of Object.entries(settings[world])) url.searchParams.set(key, value);
+    for (const [key, value] of Object.entries(settings[world])) url.searchParams.set(key, typeof value === 'string' ? value.slice(1) : value);
     try {
       await navigator.clipboard.writeText(url.href);
-      saveNote.textContent = 'Enlace copiado con tus cuatro ajustes.';
+      saveNote.textContent = 'Enlace copiado con tus ajustes.';
     } catch {
       history.replaceState(null, '', url);
       saveNote.textContent = 'Tus ajustes están en la URL. Puedes copiarla.';
@@ -273,7 +328,7 @@
       const y = wrap(p.y * (height + span * 2) - travel * p.velocity * .58, height + span * 2) - span;
       const length = s.size * (.35 + p.depth * .9);
       const alpha = (.14 + p.depth * .43) * quiet(x, y);
-      ctx.strokeStyle = p.color ? '#63351d' : '#fff5cb';
+      ctx.strokeStyle = p.color ? s.particleAccent || '#63351d' : s.particle || '#fff5cb';
       ctx.lineWidth = .65 + p.depth * 1.15;
       ctx.globalAlpha = alpha * .28 * s.character / 100;
       ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - length * (1 + s.character / 45), y + length * (.58 + s.character / 78)); ctx.stroke();
@@ -300,7 +355,7 @@
     const s = settings[world];
     if (world === 'orbita') orbit(s);
     else if (world === 'seda') silk(s);
-    else if (world === 'vector') vectors(s);
+    else if ((looks[world].layout || world) === 'vector') vectors(s);
     else aero(s);
     ctx.globalAlpha = 1;
     framesDrawn++; paintTotal += performance.now() - began;

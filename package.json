@@ -1,0 +1,9 @@
+{
+  "name": "ordzson-proposals",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-pages.mjs",
+    "test": "node --test tests/aero-physics.test.mjs"
+  }
+}

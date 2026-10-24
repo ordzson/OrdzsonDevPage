@@ -1,10 +1,13 @@
+import { AeroLenses } from './aero-lenses.js?v=11';
+import { AeroPhysics } from './aero-physics.js?v=2';
+
 const TAU = Math.PI * 2;
 const clamp = (n, low, high) => Math.max(low, Math.min(high, n));
 
 export class ParticleField {
   constructor(canvas, world, parameters) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d', { alpha: true });
+    this.ctx = world === 'aero' ? null : canvas.getContext('2d', { alpha: true });
     this.world = world;
     this.params = { ...parameters };
     this.time = 18;
@@ -19,23 +22,48 @@ export class ParticleField {
     this.seed = 716023;
     this.particles = [];
     this.sprites = [];
-    this.hero = canvas.closest('.hero');
+    this.container = canvas.closest('.hero, .services');
     this.onFrame = this.onFrame.bind(this);
     this.onVisibility = () => this.schedule();
+    this.onBackdrop = () => this.paint();
     this.onPointer = event => {
       const bounds = this.canvas.getBoundingClientRect();
       this.pointer.x = clamp((event.clientX - bounds.left) / Math.max(1, bounds.width) - .5, -.5, .5);
       this.pointer.y = clamp((event.clientY - bounds.top) / Math.max(1, bounds.height) - .5, -.5, .5);
+      if (this.lenses) this.container.toggleAttribute('data-bubble-hover', this.bubbleAt(event) !== -1);
     };
-    this.onLeave = () => { this.pointer.x = 0; this.pointer.y = 0; };
-    this.hero.addEventListener('pointermove', this.onPointer, { passive: true });
-    this.hero.addEventListener('pointerleave', this.onLeave);
+    this.onLeave = () => { this.pointer.x = 0; this.pointer.y = 0; this.container.removeAttribute('data-bubble-hover'); };
+    this.container.addEventListener('pointermove', this.onPointer, { passive: true });
+    this.container.addEventListener('pointerleave', this.onLeave);
     document.addEventListener('visibilitychange', this.onVisibility);
     if (world === 'halation') this.sprites = ['#fbc575', '#f69543', '#ffe5b5', '#cf6c38'].map(color => this.makeBokeh(color));
-    if (world === 'aero') this.sprites = [0, 1, 2].map(index => this.makeBubble(index));
+    if (world === 'aero') {
+      this.lenses = new AeroLenses(this.container, () => this.paint());
+      document.addEventListener('ordzson:backdrop-change', this.onBackdrop);
+      this.onPop = event => {
+        if (event.defaultPrevented || event.button !== 0 || event.target.closest('a, button, input, select, textarea, label') || !getSelection().isCollapsed) return;
+        this.popBubble(this.bubbleAt(event), event);
+      };
+      this.onPopKey = event => {
+        if (event.target !== this.container || !['Enter', ' '].includes(event.key) || event.repeat) return;
+        const index = this.bubbles.bodies.findIndex(body => body.y > 0 && body.y < this.height);
+        if (index === -1) return;
+        event.preventDefault();
+        this.popBubble(index);
+      };
+      this.container.tabIndex = 0;
+      this.container.setAttribute('aria-label', 'Soluciones web para tu negocio. Pulsa Intro o Espacio para reventar una burbuja.');
+      this.container.setAttribute('aria-keyshortcuts', 'Enter Space');
+      this.container.addEventListener('click', this.onPop);
+      this.container.addEventListener('keydown', this.onPopKey);
+    }
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
-    this.intersection = new IntersectionObserver(entries => { this.visible = entries[0].isIntersecting; this.schedule(); }, { threshold: 0 });
+    this.intersection = new IntersectionObserver(entries => {
+      this.visible = entries[0].isIntersecting;
+      if (!this.visible) this.lenses?.clearBursts();
+      this.schedule();
+    }, { threshold: 0 });
     this.intersection.observe(canvas);
     this.resize();
   }
@@ -50,9 +78,11 @@ export class ParticleField {
     this.height = Math.max(1, this.canvas.clientHeight);
     this.mobile = innerWidth <= 700;
     this.ratio = Math.min(devicePixelRatio || 1, 1.75);
-    this.canvas.width = Math.round(this.width * this.ratio);
-    this.canvas.height = Math.round(this.height * this.ratio);
+    // Aero owns its bubble surface; this shared canvas only measures the section.
+    this.canvas.width = this.world === 'aero' ? 1 : Math.round(this.width * this.ratio);
+    this.canvas.height = this.world === 'aero' ? 1 : Math.round(this.height * this.ratio);
     this.ctx?.setTransform(this.ratio, 0, 0, this.ratio, 0, 0);
+    this.lenses?.resize(this.width, this.height, this.ratio);
     this.build();
     this.paint();
     this.schedule();
@@ -71,19 +101,49 @@ export class ParticleField {
       color: index % 4, phase: this.random() * TAU,
       side: index % 2 ? this.random() * .23 : .77 + this.random() * .23
     }));
+    this.lenses?.build(count);
+    if (this.lenses) this.buildBubbles();
+  }
+
+  buildBubbles() {
+    this.bubbles = new AeroPhysics(this.particles, this.width, this.height, this.params.size, this.mobile, () => this.random());
+  }
+
+  bubblePoint(event) {
+    const bounds = this.canvas.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) * this.width / bounds.width;
+    const y = (event.clientY - bounds.top) * this.height / bounds.height;
+    return { x, y };
+  }
+
+  bubbleAt(event) {
+    const { x, y } = this.bubblePoint(event);
+    return this.bubbles.bodies.findIndex(body => Math.hypot(x - body.x, y - body.y) <= body.r);
+  }
+
+  popBubble(index, event) {
+    if (index < 0) return;
+    const body = this.bubbles.bodies[index];
+    const point = event && this.bubblePoint(event);
+    this.lenses.pop(index, point && { x: (point.x - body.x + body.r) / (body.r * 2), y: (point.y - body.y + body.r) / (body.r * 2) });
+    this.bubbles.recycle(body);
+    this.container.removeAttribute('data-bubble-hover');
+    this.paint();
   }
 
   update(parameters) {
     const rebuild = parameters.density !== this.params.density;
+    const resizeBubbles = this.lenses && parameters.size !== this.params.size;
     this.params = { ...parameters };
     if (rebuild) this.build();
+    else if (resizeBubbles) this.buildBubbles();
     this.paint();
     this.schedule();
   }
 
   setPaused(paused) { this.paused = paused; this.schedule(); }
   schedule() {
-    const shouldRun = !this.destroyed && !this.paused && this.visible && !document.hidden && this.params.speed > 0;
+    const shouldRun = !this.destroyed && !this.paused && this.visible && !document.hidden && this.params.speed > 0 && this.particles.length > 0;
     if (shouldRun && !this.frame) { this.lastTime = 0; this.frame = requestAnimationFrame(this.onFrame); }
     if (!shouldRun && this.frame) { cancelAnimationFrame(this.frame); this.frame = 0; this.lastTime = 0; }
   }
@@ -96,15 +156,16 @@ export class ParticleField {
     const ease = 1 - Math.exp(-delta * 3);
     this.pointer.sx += (this.pointer.x - this.pointer.sx) * ease;
     this.pointer.sy += (this.pointer.y - this.pointer.sy) * ease;
+    this.bubbles?.step(delta * this.params.speed / 28, this.pointer.sx * this.params.interaction / 100, this.pointer.sy * this.params.interaction / 100);
     this.paint();
     // Preserve the timestamp across frames; schedule resets it only on resume.
-    if (!this.paused && this.visible && !document.hidden && this.params.speed > 0) this.frame = requestAnimationFrame(this.onFrame);
+    if (!this.paused && this.visible && !document.hidden && this.params.speed > 0 && this.particles.length > 0) this.frame = requestAnimationFrame(this.onFrame);
   }
 
   paint() {
-    if (!this.ctx || this.destroyed) return;
+    if (this.destroyed || (!this.ctx && !this.lenses)) return;
     const before = performance.now();
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx?.clearRect(0, 0, this.width, this.height);
     this[this.world]();
     this.frames++;
     this.paintTotal += performance.now() - before;
@@ -221,54 +282,28 @@ export class ParticleField {
     c.globalAlpha = 1;
   }
 
-  makeBubble(index) {
-    const sprite = document.createElement('canvas'); sprite.width = sprite.height = 256;
-    const c = sprite.getContext('2d'), cx = 128, r = 112;
-    const fill = c.createRadialGradient(cx - 35, cx - 42, 5, cx, cx, r);
-    fill.addColorStop(0, '#ffffff43'); fill.addColorStop(.38, '#d4faff08'); fill.addColorStop(.72, '#d5fbff12');
-    fill.addColorStop(.88, index === 1 ? '#9ee9b862' : '#a0ddff62'); fill.addColorStop(.97, '#ffffffbf'); fill.addColorStop(1, '#69b5dd40');
-    c.beginPath(); c.arc(cx, cx, r, 0, TAU); c.fillStyle = fill; c.fill();
-    const rim = c.createLinearGradient(30, 20, 225, 245);
-    rim.addColorStop(0, '#ffffffef'); rim.addColorStop(.3, '#efffff5a'); rim.addColorStop(.6, '#92d5e976'); rim.addColorStop(.82, '#b5efbdbb'); rim.addColorStop(1, '#ffffffcc');
-    c.strokeStyle = rim; c.lineWidth = 2; c.stroke();
-    c.save(); c.translate(cx - 31, cx - 65); c.rotate(-.5);
-    const glint = c.createRadialGradient(0, 0, 0, 0, 0, 40);
-    glint.addColorStop(0, '#fffffffa'); glint.addColorStop(.5, '#ffffffa3'); glint.addColorStop(1, '#ffffff00');
-    c.scale(1, .42); c.fillStyle = glint; c.beginPath(); c.arc(0, 0, 42, 0, TAU); c.fill(); c.restore();
-    c.strokeStyle = '#ffffffb0'; c.lineWidth = 3.5; c.beginPath(); c.arc(cx, cx, r * .84, 3.8, 4.7); c.stroke();
-    c.strokeStyle = '#dbffdd86'; c.lineWidth = 2; c.beginPath(); c.arc(cx, cx, r * .89, .7, 1.6); c.stroke();
-    return sprite;
-  }
-
   aero() {
-    const c = this.ctx, w = this.width, h = this.height;
-    const size = .2 + this.params.size / 65, light = this.params.light / 100;
-    const influence = this.params.interaction / 100;
-    for (let i = 0; i < this.particles.length; i++) {
-      const p = this.particles[i];
-      const r = (12 + p.depth ** 2 * 72) * size * (this.mobile ? .65 : 1);
-      const xBase = p.v > .52 ? p.u : p.side;
-      const x = xBase * w + Math.sin(this.time * .16 + p.phase) * (12 + p.depth * 10) + this.pointer.sx * influence * p.depth * 50;
-      const y = ((p.v * h - this.time * (4 + p.speed * 11)) % (h + r * 2) + h + r * 2) % (h + r * 2) - r;
-      c.globalAlpha = (.35 + p.depth * .5) * light;
-      c.drawImage(this.sprites[i % 3], x - r, y - r, r * 2, r * 2);
-      if (i % 4 === 0 && this.params.character > 20) {
-        const glint = (this.params.character - 20) / 80;
-        c.globalAlpha *= glint;
-        c.strokeStyle = '#ffffff'; c.lineWidth = 1;
-        c.beginPath(); c.moveTo(x - r * .3, y - r * .65 - 5); c.lineTo(x - r * .3, y - r * .65 + 5);
-        c.moveTo(x - r * .3 - 5, y - r * .65); c.lineTo(x - r * .3 + 5, y - r * .65); c.stroke();
-      }
+    this.lenses.update(this.params);
+    this.lenses.beginFrame();
+    for (let i = 0; i < this.bubbles.bodies.length; i++) {
+      const body = this.bubbles.bodies[i];
+      this.lenses.draw(i, body.x, body.y, body.r);
     }
-    c.globalAlpha = 1;
+    this.lenses.endFrame();
   }
 
   destroy() {
     this.destroyed = true; cancelAnimationFrame(this.frame);
     this.resizeObserver.disconnect(); this.intersection.disconnect();
-    this.hero.removeEventListener('pointermove', this.onPointer);
-    this.hero.removeEventListener('pointerleave', this.onLeave);
+    this.container.removeEventListener('pointermove', this.onPointer);
+    this.container.removeEventListener('pointerleave', this.onLeave);
+    if (this.onPop) {
+      this.container.removeEventListener('click', this.onPop);
+      this.container.removeEventListener('keydown', this.onPopKey);
+    }
     document.removeEventListener('visibilitychange', this.onVisibility);
+    document.removeEventListener('ordzson:backdrop-change', this.onBackdrop);
+    this.lenses?.destroy();
     this.sprites.length = 0;
   }
 

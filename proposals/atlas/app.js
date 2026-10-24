@@ -1,4 +1,5 @@
-import { ParticleField } from './field.js';
+import { ParticleField } from './field.js?v=17';
+import { AeroBackdrop } from './aero-backdrops.js?v=5';
 
 const icons = {
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>',
@@ -9,16 +10,19 @@ const worlds = {
   orbit: { name: 'Órbita', subtitle: 'Polvo estelar · perspectiva orbital', detail: 'Una órbita de luz. Un espacio para tus ideas.', defaults: { density: 100, size: 65, speed: 38, light: 96, interaction: 100, character: 50 }, character: 'Inclinación', labels: ['Dispersa', 'Densa'], color: '#111719' },
   halation: { name: 'Halation', subtitle: 'Bokeh fotográfico · luz desenfocada', detail: 'Luz, profundidad y una mirada diferente.', defaults: { density: 35, size: 72, speed: 18, light: 67, interaction: 25, character: 68 }, character: 'Desenfoque', labels: ['Pocas luces', 'Más luces'], color: '#f2ede4' },
   current: { name: 'Corriente', subtitle: 'Nube de puntos · ondas continuas', detail: 'Ideas en movimiento. Desarrollo con dirección.', defaults: { density: 95, size: 38, speed: 17, light: 80, interaction: 100, character: 100 }, character: 'Amplitud', labels: ['Ligera', 'Envolvente'], color: '#e9f3ed' },
-  aero: { name: 'Frutiger Aero', subtitle: 'Burbujas de cristal · naturaleza y brillo', detail: 'El futuro se siente bien.', defaults: { density: 42, size: 68, speed: 45, light: 89, interaction: 35, character: 84 }, character: 'Reflejos', labels: ['Despejado', 'Burbujeante'], color: '#d9f4ff' }
+  aero: { name: 'Frutiger Aero', subtitle: 'Burbujas de cristal · luz y transparencia', detail: 'El futuro se siente bien.', defaults: { density: 42, size: 68, speed: 45, light: 89, interaction: 35, character: 84, glassTransparency: 82, glassBlur: 20, glassSaturation: 65, bubbleColor: 72 }, character: 'Reflejos', labels: ['Despejado', 'Burbujeante'], color: '#d9f4ff' }
 };
 const site = document.querySelector('#site');
 const settings = document.querySelector('#settings');
 const controls = document.querySelector('#sliders');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const storageKey = 'ordzson-proposals-atlas-v2';
+// The published portfolio always uses the approved Frutiger Aero proposal.
+const singleProposal = document.body.dataset.singleProposal;
+const assets = new URL('./assets/', import.meta.url);
 let stored = {};
 try { stored = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch {}
-let active, field, paused = false;
+let active, field, backdrop, paused = false;
 
 function readValues(world) {
   const values = { ...worlds[world].defaults };
@@ -34,18 +38,20 @@ function persist() {
 const header = () => `<header class="site-header"><a class="wordmark" href="#contenido" aria-label="Ordzson, inicio">ordzson<span>.</span></a><nav aria-label="Principal"><a href="#trabajo">Trabajo</a><a href="#servicios">Servicios</a><a class="nav-contact" href="#contacto">Hablemos ${icons.diagonal}</a></nav></header>`;
 const offer = '<p class="offer">Páginas web, tiendas en línea y sistemas a medida.<br> Un único responsable, trato directo.</p>';
 const cta = (label = 'Hablemos de tu proyecto') => `<a class="cta" href="#contacto"><span>${label}</span>${icons.arrow}</a>`;
-const work = (name, kind, url, image, development = false) => `<article class="work-item ${development ? 'work-lirios' : 'work-bamboo'}"><a class="project-visual" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Visitar ${name}, abre en otra pestaña"><div class="window-bar" aria-hidden="true"><span class="window-dots"><i></i><i></i><i></i></span><span>${development ? 'ordzson.github.io/Lirios' : 'bamboo.salon'}</span></div><img src="assets/${image}" width="1440" height="1000" loading="lazy" alt="${development ? 'Lirios: flores artesanales y ramos tejidos en un catálogo de tonos cálidos.' : 'Bamboo Salon: página de belleza profesional con acceso a citas y tienda en línea.'}"></a><div class="project-caption"><div><h3>${name}</h3><p>${kind}${development ? ' <span class="development">En desarrollo</span>' : ''}</p></div><a href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Ver ${name}, abre en otra pestaña">Ver proyecto ${icons.diagonal}</a></div></article>`;
+const work = (name, kind, url, image, development = false) => `<article class="work-item ${development ? 'work-lirios' : 'work-bamboo'}"><a class="project-visual" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Visitar ${name}, abre en otra pestaña"><div class="window-bar" aria-hidden="true"><span class="window-dots"><i></i><i></i><i></i></span><span>${development ? 'ordzson.github.io/Lirios' : 'bamboo.salon'}</span></div><img src="${new URL(image, assets).href}" width="1440" height="1000" loading="lazy" alt="${development ? 'Lirios: flores artesanales y ramos tejidos en un catálogo de tonos cálidos.' : 'Bamboo Salon: página de belleza profesional con acceso a citas y tienda en línea.'}"></a><div class="project-caption"><div><h3>${name}</h3><p>${kind}${development ? ' <span class="development">En desarrollo</span>' : ''}</p></div><a href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Ver ${name}, abre en otra pestaña">Ver proyecto ${icons.diagonal}</a></div></article>`;
 const projects = () => work('Bamboo Salon', 'Citas y tienda en línea', 'https://www.bamboo.salon/', 'bamboo.png') + work('Lirios', 'Catálogo de flores artesanales', 'https://ordzson.github.io/Lirios/', 'lirios.png', true);
 const process = () => '<ol class="process" aria-label="Proceso de trabajo"><li><span>01</span>Requerimientos</li><li><span>02</span>Diseño</li><li><span>03</span>Desarrollo</li><li><span>04</span>Implementación</li></ol>';
-const services = () => `<section class="services" id="servicios"><div class="services-heading"><h2>Soluciones web<br>para tu negocio.</h2><p>Un único responsable.<br>De la primera idea a la implementación.</p></div><ul><li><span>Páginas web</span>${icons.diagonal}</li><li><span>Tiendas en línea</span>${icons.diagonal}</li><li><span>Sistemas a medida</span>${icons.diagonal}</li></ul></section>`;
+const services = (decoration = '') => `<section class="services" id="servicios">${decoration}<div class="services-heading"><h2>Soluciones web<br>para tu negocio.</h2><p>Un único responsable.<br>De la primera idea a la implementación.</p></div><ul><li><span>Páginas web</span>${icons.diagonal}</li><li><span>Tiendas en línea</span>${icons.diagonal}</li><li><span>Sistemas a medida</span>${icons.diagonal}</li></ul></section>`;
 const footer = () => `<footer id="contacto"><div class="footer-main"><h2>Hablemos de<br>tu proyecto<span>.</span></h2><p>Un único responsable,<br>trato directo.</p></div><div class="footer-bottom"><a class="wordmark" href="#contenido">ordzson<span>.</span></a><a class="back-top" href="#contenido">Volver arriba ${icons.up}</a></div></footer>`;
 const canvas = '<canvas id="field" aria-hidden="true"></canvas>';
+// Fine vector contours stay crisp at every viewport and reveal the lenses.
+const aeroContours = `<img class="aero-contours" src="${new URL('aero-contours.svg', assets).href}" width="1440" height="690" alt="" aria-hidden="true">`;
 
 function markup(world) {
   if (world === 'orbit') return `${header()}<main id="contenido"><section class="hero orbit-hero">${canvas}<div class="hero-copy"><h1>Tu proyecto web,<br>de principio<br>a fin<span>.</span></h1>${offer}${cta()}</div><div class="hero-caption"><span>${worlds.orbit.detail}</span><a href="#trabajo">Explorar el trabajo ${icons.arrow}</a></div></section><section class="work" id="trabajo"><div class="section-heading"><h2>Trabajo en perspectiva.</h2><p>Dos proyectos. Dos universos.</p></div><div class="work-grid">${projects()}</div></section><div class="process-wrap">${process()}</div>${services()}</main>${footer()}`;
   if (world === 'halation') return `${header()}<main id="contenido"><section class="hero halation-hero"><div class="photo-field">${canvas}<span class="photo-caption">Luz que se convierte en forma.</span></div><div class="hero-copy"><h1>Tu proyecto web,<br><em>de principio<br>a fin.</em></h1>${offer}${cta('Démosle forma')}</div><div class="hero-caption"><span>${worlds.halation.detail}</span><a href="#trabajo">Ver proyectos ${icons.arrow}</a></div></section><section class="work" id="trabajo"><div class="section-heading"><h2>Hecho con intención.</h2><p>Una mirada al trabajo.</p></div><div class="work-grid">${projects()}</div></section>${services()}<div class="process-wrap">${process()}</div></main>${footer()}`;
   if (world === 'current') return `${header()}<main id="contenido"><section class="hero current-hero">${canvas}<div class="hero-copy"><h1>Tu proyecto web.<br>De principio<br>a fin<span>.</span></h1><div class="current-offer">${offer}${cta('Pongamos tu idea en movimiento')}</div></div><div class="hero-caption"><span>${worlds.current.detail}</span><a href="#trabajo">Sigue la corriente ${icons.arrow}</a></div></section><section class="work" id="trabajo"><div class="section-heading"><h2>Ideas que toman forma.</h2><p>Desarrollo web, en la práctica.</p></div><div class="work-grid">${projects()}</div></section><div class="process-wrap">${process()}</div>${services()}</main>${footer()}`;
-  return `${header()}<main id="contenido"><section class="hero aero-hero"><div class="aero-landscape" role="img" aria-label="Paisaje conceptual Frutiger Aero: cielo azul, pradera verde, agua turquesa y esferas de cristal."></div>${canvas}<div class="hero-copy"><h1>Tu proyecto web,<br> con un futuro brillante.</h1>${offer}${cta('Hagámoslo realidad')}</div><div class="hero-caption"><span>${worlds.aero.detail}</span><a href="#trabajo">Descubre el trabajo ${icons.arrow}</a></div></section><section class="work" id="trabajo"><div class="section-heading"><h2>Buenas ideas.<br>Un mundo de posibilidades.</h2><p>Proyectos que puedes explorar.</p></div><div class="work-grid">${projects()}</div></section>${services()}<div class="process-wrap">${process()}</div></main>${footer()}`;
+  return `${header()}<main id="contenido"><section class="hero aero-hero"><div class="aero-optics" aria-hidden="true"><span class="aero-swell aero-swell--sky"></span><span class="aero-swell aero-swell--lavender"></span><span class="aero-swell aero-swell--water"></span><span class="aero-swell aero-swell--light"></span>${aeroContours}</div><div class="hero-copy"><h1>Tu proyecto web,<br> <span class="hero-highlight">con un futuro brillante.</span></h1>${offer}${cta('Hagámoslo realidad')}</div><div class="hero-caption"><span>${worlds.aero.detail}</span><a href="#trabajo">Descubre el trabajo ${icons.arrow}</a></div></section><section class="work" id="trabajo"><div class="section-heading"><h2>Buenas ideas.<br>Un mundo de posibilidades.</h2><p>Proyectos que puedes explorar.</p></div><div class="work-grid">${projects()}</div></section>${services(canvas)}<div class="process-wrap">${process()}</div></main>${footer()}`;
 }
 
 function updatePause() {
@@ -56,26 +62,53 @@ function updatePause() {
   button.disabled = reduced.matches;
   document.querySelector('#motion-note').textContent = reduced.matches ? 'Movimiento reducido: composición estática. Puedes ajustar sus parámetros.' : 'Los ajustes se guardan para esta propuesta.';
   if (field) field.setPaused(stop);
+  backdrop?.setPaused(stop);
+  if (active === 'aero') button.setAttribute('aria-label', reduced.matches ? 'Movimiento reducido activado' : stop ? 'Reanudar animación' : 'Pausar animación');
+}
+const glassParameters = { glassTransparency: 'Transparencia', glassBlur: 'Desenfoque', glassSaturation: 'Saturación del cristal', bubbleColor: 'Color de burbujas' };
+function parameterText(key, value) {
+  if (key === 'glassBlur') return `${Number((value * .4).toFixed(1))} px`;
+  if (key === 'glassSaturation') return `${Number((1 + value * .04).toFixed(2))}×`;
+  if (key === 'glassTransparency' || key === 'bubbleColor') return `${value}%`;
+  return String(value);
+}
+function updateServicesGlass() {
+  if (active !== 'aero') return;
+  const values = stored.aero, style = document.querySelector('.services').style;
+  style.setProperty('--services-glass-opacity', (1 - values.glassTransparency / 100).toFixed(2));
+  style.setProperty('--services-glass-blur', `${values.glassBlur * .4}px`);
+  style.setProperty('--services-glass-saturation', (1 + values.glassSaturation * .04).toFixed(2));
 }
 function renderSliders() {
   const config = worlds[active], values = stored[active];
   document.querySelector('#settings-title').textContent = config.name;
   document.querySelector('#settings-description').textContent = config.subtitle;
   const labels = { density: 'Densidad', size: 'Tamaño', speed: 'Velocidad', light: 'Intensidad', interaction: 'Respuesta al cursor', character: config.character };
-  controls.innerHTML = Object.entries(labels).map(([key, label]) => `<label class="parameter" for="param-${key}"><span>${label}</span><output id="value-${key}" for="param-${key}">${values[key]}</output><input id="param-${key}" name="${key}" type="range" min="0" max="100" step="1" value="${values[key]}"></label>`).join('');
+  const sliders = entries => Object.entries(entries).map(([key, label]) => `<label class="parameter" for="param-${key}"><span>${label}</span><output id="value-${key}" for="param-${key}">${parameterText(key, values[key])}</output><input id="param-${key}" name="${key}" type="range" min="0" max="100" step="1" value="${values[key]}" aria-valuetext="${parameterText(key, values[key])}"></label>`).join('');
+  controls.innerHTML = active === 'aero'
+    ? `<fieldset class="parameter-group"><legend>Cristal de servicios</legend><p class="parameter-hint">Haz más visibles los colores que pasan detrás del panel.</p><a class="glass-preview-link" href="#servicios">Ver panel de servicios ${icons.diagonal}</a>${sliders(glassParameters)}</fieldset><fieldset class="parameter-group"><legend>Burbujas y movimiento</legend>${sliders(labels)}</fieldset>`
+    : sliders(labels);
+  settings.setAttribute('aria-label', active === 'aero' ? 'Parámetros de cristal y burbujas' : 'Parámetros de partículas');
+  document.querySelector('#backdrop-settings').hidden = active !== 'aero';
+  document.querySelector('#aurora-theme-setting').hidden = active !== 'aero' || backdrop?.value !== 'aurora';
   document.querySelector('#feedback').textContent = '';
 }
 function setWorld(world, initial = false) {
+  if (singleProposal) world = singleProposal;
   if (!worlds[world]) world = 'orbit';
   field?.destroy();
+  backdrop?.destroy();
+  backdrop = null;
   active = world;
   stored[world] = readValues(world);
   document.body.dataset.world = world;
   document.querySelector('meta[name="theme-color"]').content = worlds[world].color;
-  document.title = `Ordzson · ${worlds[world].name}`;
+  document.title = singleProposal ? 'Ordzson · Desarrollo web' : `Ordzson · ${worlds[world].name}`;
   for (const button of document.querySelectorAll('.world-picker button')) button.setAttribute('aria-pressed', String(button.dataset.world === world));
   site.innerHTML = markup(world);
+  updateServicesGlass();
   renderSliders();
+  if (world === 'aero') backdrop = new AeroBackdrop();
   field = new ParticleField(document.querySelector('#field'), world, stored[world]);
   updatePause();
   if (!initial) {
@@ -84,7 +117,7 @@ function setWorld(world, initial = false) {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 }
-document.querySelector('.world-picker').addEventListener('click', event => {
+document.querySelector('.world-picker')?.addEventListener('click', event => {
   const button = event.target.closest('button[data-world]');
   if (button && button.dataset.world !== active) setWorld(button.dataset.world);
 });
@@ -92,10 +125,18 @@ controls.addEventListener('input', event => {
   const input = event.target;
   if (!input.matches('input[type="range"]')) return;
   stored[active][input.name] = Number(input.value);
-  document.querySelector(`#value-${input.name}`).value = input.value;
+  const text = parameterText(input.name, Number(input.value));
+  document.querySelector(`#value-${input.name}`).value = text;
+  input.setAttribute('aria-valuetext', text);
+  updateServicesGlass();
   field.update(stored[active]); persist();
 });
 controls.addEventListener('submit', event => event.preventDefault());
+controls.addEventListener('click', event => {
+  if (!event.target.closest('.glass-preview-link')) return;
+  event.preventDefault();
+  document.querySelector('#servicios').scrollIntoView({ behavior: reduced.matches ? 'instant' : 'smooth', block: 'center' });
+});
 function toggleSettings(show) {
   settings.hidden = !show;
   document.querySelector('#parameters').setAttribute('aria-expanded', String(show));
@@ -104,14 +145,26 @@ document.querySelector('#parameters').addEventListener('click', () => toggleSett
 document.querySelector('#close-settings').addEventListener('click', () => { toggleSettings(false); document.querySelector('#parameters').focus(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !settings.hidden) { toggleSettings(false); document.querySelector('#parameters').focus(); } });
 document.querySelector('#pause').addEventListener('click', () => { paused = !paused; updatePause(); });
+document.querySelector('#aero-backdrop').addEventListener('change', event => backdrop?.set(event.target.value));
+document.querySelector('#aurora-theme-setting').addEventListener('click', event => {
+  const button = event.target.closest('[data-aurora-theme]');
+  if (button) backdrop?.setTheme(button.dataset.auroraTheme);
+});
+window.addEventListener('message', event => {
+  if (event.source !== parent || event.origin !== location.origin) return;
+  if (event.data?.type === 'ordzson:backdrop') backdrop?.set(event.data.backdrop);
+  if (event.data?.type === 'ordzson:aurora-theme') backdrop?.setTheme(event.data.theme);
+});
 document.querySelector('#reset').addEventListener('click', () => {
-  stored[active] = { ...worlds[active].defaults }; field.update(stored[active]); renderSliders(); persist();
+  stored[active] = { ...worlds[active].defaults }; updateServicesGlass(); field.update(stored[active]); renderSliders(); persist();
   document.querySelector('#feedback').textContent = 'Parámetros originales restaurados.';
 });
 document.querySelector('#share').addEventListener('click', async () => {
   if (window.parent !== window) { window.parent.postMessage({ type: 'ordzson:share', proposal: new URLSearchParams(location.search).get('proposal') }, location.origin); return; }
   const url = new URL(location.href); url.search = ''; url.hash = '';
-  url.searchParams.set('world', active);
+  if (!singleProposal) url.searchParams.set('world', active);
+  if (backdrop) url.searchParams.set('backdrop', backdrop.value);
+  if (backdrop?.value === 'aurora') url.searchParams.set('theme', backdrop.theme);
   for (const [key, value] of Object.entries(stored[active])) url.searchParams.set(key, value);
   try {
     await navigator.clipboard.writeText(url.href);
@@ -123,7 +176,12 @@ document.querySelector('#share').addEventListener('click', async () => {
 });
 reduced.addEventListener('change', updatePause);
 function loadLocation() {
-  const params = new URLSearchParams(location.search), world = worlds[params.get('world')] ? params.get('world') : 'orbit';
+  const url = new URL(location.href);
+  if (singleProposal) {
+    for (const key of ['proposal', 'world', 'look', 'embed']) url.searchParams.delete(key);
+    history.replaceState(history.state, '', url);
+  }
+  const params = url.searchParams, world = singleProposal || (worlds[params.get('world')] ? params.get('world') : 'orbit');
   stored[world] = readValues(world);
   for (const key of Object.keys(worlds[world].defaults)) {
     const value = params.get(key);
@@ -133,4 +191,4 @@ function loadLocation() {
 }
 window.addEventListener('popstate', loadLocation);
 loadLocation();
-window.particleAtlas = { get state() { return { world: active, params: { ...stored[active] }, ...field.state }; } };
+window.particleAtlas = { get state() { return { world: active, params: { ...stored[active] }, ...field.state, backdrop: backdrop?.value, theme: backdrop?.theme }; } };

@@ -15,9 +15,10 @@
       return { key, label: copy?.textContent.trim() || key, value: input?.getAttribute('aria-valuetext') || label?.querySelector('output')?.textContent || String(value) };
     });
     if (current.preset) entries.unshift({ key: 'preset', label: 'Estilo', value: document.querySelector('[data-preset][aria-pressed="true"]').textContent });
-    send({ type: 'ordzson:state', values, entries, preset: current.preset });
+    send({ type: 'ordzson:state', values, entries, preset: current.preset, backdrop: current.backdrop, theme: current.theme });
   };
   const motionButton = () => document.querySelector('#pause, #motion-toggle');
+  document.addEventListener('ordzson:backdrop-change', publish);
   let lastScrollY = scrollY;
   let scrollFrame = 0;
   let scrollReported = false;
@@ -41,7 +42,7 @@
     if (event.key === 'Escape') send({ type: 'ordzson:dismiss' });
   });
   document.addEventListener('input', event => {
-    if (event.target.matches('input[type="range"]')) queueMicrotask(publish);
+    if (event.target.matches('input[type="range"], input[type="color"]')) queueMicrotask(publish);
   });
   document.addEventListener('click', event => {
     if (event.target.closest('#reset, [data-preset]')) queueMicrotask(publish);
