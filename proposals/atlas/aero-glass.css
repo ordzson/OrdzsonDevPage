@@ -206,17 +206,17 @@ body[data-world="aero"] {
   background:
     radial-gradient(circle at 40% 35%, transparent 66%, #d8e9f014 83%, #ffffff61 96%, #ffffff8c 99%),
     radial-gradient(circle at 36% 30%,
-      hsl(var(--bubble-hue, 195) 90% 62% / calc(var(--bubble-color, .72) * .12)),
-      hsl(var(--bubble-hue, 195) 90% 57% / calc(var(--bubble-color, .72) * .3)) 58%,
-      hsl(var(--bubble-hue, 195) 85% 52% / calc(var(--bubble-color, .72) * .62)) 87%,
+      hsl(var(--bubble-hue, 195) 90% 62% / calc(var(--bubble-color, .1) * .12)),
+      hsl(var(--bubble-hue, 195) 90% 57% / calc(var(--bubble-color, .1) * .3)) 58%,
+      hsl(var(--bubble-hue, 195) 85% 52% / calc(var(--bubble-color, .1) * .62)) 87%,
       transparent 100%);
 }
 .aero-bubble::before {
   content: '';
   position: absolute; inset: 0; z-index: 1; border-radius: inherit;
-  border: 1px solid hsl(var(--bubble-hue, 195) 65% 53% / .58);
+  border: 1px solid hsl(var(--bubble-hue, 195) calc(var(--bubble-color, .1) * 65%) 53% / .58);
   opacity: var(--bubble-light);
-  box-shadow: inset 1px 2px 2px #ffffffc9, inset -1px -2px 4px hsl(var(--bubble-hue, 195) 65% 53% / .24);
+  box-shadow: inset 1px 2px 2px #ffffffc9, inset -1px -2px 4px hsl(var(--bubble-hue, 195) calc(var(--bubble-color, .1) * 65%) 53% / .24);
   background:
     radial-gradient(ellipse 33% 13% at 32% 18%, #ffffffc9, #ffffff00),
     radial-gradient(ellipse 42% 17% at 69% 88%, #ffffff52, #ffffff00),

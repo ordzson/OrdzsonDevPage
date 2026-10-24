@@ -72,8 +72,9 @@ export class AeroPhysics {
     if (!steps) return;
     const dt = delta / steps, bodies = this.bodies;
     for (let step = 0; step < steps; step++) {
+      // Finish every reentry before taking the shared, non-overlapping snapshot.
+      for (const body of bodies) if (body.y < -body.r - this.gap) this.recycle(body);
       for (const body of bodies) {
-        if (body.y < -body.r - this.gap) this.recycle(body);
         body.previousX = body.x; body.previousY = body.y;
         // Collisions may deflect a bubble down briefly; buoyancy restores its
         // own upward speed smoothly, even under sustained pointer forces.
@@ -108,10 +109,14 @@ export class AeroPhysics {
         for (const body of bodies) this.bounds(body);
         if (!contacts) break;
       }
-      // Very dense clusters can exhaust the solver. Retain the last valid
-      // positions for that substep while the new velocities separate the cluster.
-      if (this.overlaps()) for (const body of bodies) {
-        body.x = body.previousX; body.y = body.previousY;
+      // A packed contact chain can exhaust the solver. Translating the last
+      // valid layout upward preserves clearance and lets the cluster leave
+      // through the open top instead of freezing every bubble in place.
+      if (this.overlaps()) {
+        const ascent = bodies.reduce((slowest, body) => Math.min(slowest, body.rise), Infinity) * dt;
+        for (const body of bodies) {
+          body.x = body.previousX; body.y = body.previousY - ascent;
+        }
       }
     }
   }
