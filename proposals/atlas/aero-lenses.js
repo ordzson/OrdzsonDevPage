@@ -1,4 +1,4 @@
-import { AeroBubbleSprites } from './aero-bubble-sprites.js?v=2';
+import { AeroBubbleSprites } from './aero-bubble-sprites.js?v=3';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const REFERENCE_DIAMETER = 192;
