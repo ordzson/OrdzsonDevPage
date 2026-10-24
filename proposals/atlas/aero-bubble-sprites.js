@@ -121,7 +121,7 @@ export class AeroBubbleSprites {
     radial(.32, .18, [[0, '#ffffffc9'], [1, '#ffffff00']], .33, .13);
 
     // Inset shadows are rasterized once instead of filtered on every frame.
-    for (const [x, y, blur, shade] of [[-1, -2, 4, `hsl(${hue} ${65 * color}% 53% / .24)`], [1, 2, 2, '#ffffffc9']]) {
+    for (const [x, y, blur, shade] of [[-1, -2, 4, `hsl(${hue} 65% 53% / .24)`], [1, 2, 2, '#ffffffc9']]) {
       ctx.save();
       ctx.shadowColor = shade;
       const scale = canvas.width / diameter;
@@ -137,7 +137,7 @@ export class AeroBubbleSprites {
     }
     ctx.beginPath();
     ctx.arc(radius, radius, Math.max(.5, radius - .5), 0, TAU);
-    ctx.strokeStyle = `hsl(${hue} ${65 * color}% 53% / .58)`;
+    ctx.strokeStyle = `hsl(${hue} 65% 53% / .58)`;
     ctx.lineWidth = 1;
     ctx.stroke();
     const sprite = { canvas, blurred: null };
