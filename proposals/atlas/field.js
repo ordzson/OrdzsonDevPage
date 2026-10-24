@@ -1,4 +1,4 @@
-import { AeroLenses } from './aero-lenses.js?v=12';
+import { AeroLenses } from './aero-lenses.js?v=13';
 import { AeroPhysics } from './aero-physics.js?v=3';
 
 const TAU = Math.PI * 2;
@@ -77,7 +77,9 @@ export class ParticleField {
     this.width = Math.max(1, this.canvas.clientWidth);
     this.height = Math.max(1, this.canvas.clientHeight);
     this.mobile = innerWidth <= 700;
-    this.ratio = Math.min(devicePixelRatio || 1, 1.75);
+    // Upscaled bubble sprites blur their 1px rims into thick grey rings on
+    // phone screens, so Aero renders them at the native pixel density.
+    this.ratio = Math.min(devicePixelRatio || 1, this.world === 'aero' ? 3 : 1.75);
     // Aero owns its bubble surface; this shared canvas only measures the section.
     this.canvas.width = this.world === 'aero' ? 1 : Math.round(this.width * this.ratio);
     this.canvas.height = this.world === 'aero' ? 1 : Math.round(this.height * this.ratio);
@@ -142,6 +144,7 @@ export class ParticleField {
   }
 
   setPaused(paused) { this.paused = paused; this.schedule(); }
+  setCalm(calm) { this.calm = calm; }
   schedule() {
     const shouldRun = !this.destroyed && !this.paused && this.visible && !document.hidden && this.params.speed > 0 && this.particles.length > 0;
     if (shouldRun && !this.frame) { this.lastTime = 0; this.frame = requestAnimationFrame(this.onFrame); }
@@ -152,11 +155,13 @@ export class ParticleField {
     this.frame = 0;
     const delta = this.lastTime ? Math.min((now - this.lastTime) / 1000, .05) : 0;
     this.lastTime = now;
-    this.time += delta * this.params.speed / 28;
+    // Reduced motion halves the pace instead of freezing the bubbles.
+    const advance = delta * this.params.speed / 28 * (this.calm ? .5 : 1);
+    this.time += advance;
     const ease = 1 - Math.exp(-delta * 3);
     this.pointer.sx += (this.pointer.x - this.pointer.sx) * ease;
     this.pointer.sy += (this.pointer.y - this.pointer.sy) * ease;
-    this.bubbles?.step(delta * this.params.speed / 28, this.pointer.sx * this.params.interaction / 100, this.pointer.sy * this.params.interaction / 100);
+    this.bubbles?.step(advance, this.pointer.sx * this.params.interaction / 100, this.pointer.sy * this.params.interaction / 100);
     this.paint();
     // Preserve the timestamp across frames; schedule resets it only on resume.
     if (!this.paused && this.visible && !document.hidden && this.params.speed > 0 && this.particles.length > 0) this.frame = requestAnimationFrame(this.onFrame);

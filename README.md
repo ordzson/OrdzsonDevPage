@@ -24,6 +24,8 @@ python3 -m http.server 4174 --bind 127.0.0.1 --directory dist
 
 Los parámetros antiguos `proposal`, `world`, `look` y `embed` se ignoran y se retiran de la URL pública. El sitio siempre abre Panorama; los enlaces con parámetros válidos de animación, fondo y apariencia siguen funcionando. **Copiar enlace** comparte la vista actual sin un selector de propuestas.
 
+Con movimiento reducido activado en el sistema (por ejemplo, «Quitar animaciones» o el ahorro de batería en Android), las burbujas siguen subiendo a la mitad de velocidad, se pueden pausar y conservan el mismo reventado; el fondo Aurora queda fijo. Las burbujas se dibujan a la densidad de píxeles del dispositivo (hasta 3×) para que sus bordes no se vean grises y borrosos en el teléfono.
+
 Los valores iniciales de Panorama son densidad 37, tamaño 68, velocidad 45, intensidad 100, respuesta al cursor 0 y reflejos 0; el cristal usa transparencia 80%, desenfoque 10 px, saturación 3.2× y color de burbujas 10%. Se aplican también en dispositivos nuevos. Los ajustes personalizados se guardan por navegador; para llevarlos a otro dispositivo, utiliza **Copiar enlace**. El perfil antiguo sin personalizar se actualiza automáticamente.
 
 ## Exploraciones conservadas
