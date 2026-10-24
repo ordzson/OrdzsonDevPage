@@ -1,0 +1,397 @@
+/* Panorama: pastel light, fine vector currents, and clear refracting bubbles. */
+body[data-world="aero"] {
+  --ground: #edf7fc;
+  --ink: #153e59;
+  --muted: #42647a;
+  --accent: #146a43;
+  --line: #bdd8e4;
+  --glass-fill: linear-gradient(135deg, #ffffffb8, #ffffff57 58%, #e5f5ff80);
+  --glass-edge: #ffffffd9;
+  --glass-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #ffffff66, 0 12px 36px #245a7812;
+  color-scheme: light;
+  background: #edf7fc;
+}
+
+[data-world="aero"] #site {
+  overflow: clip;
+  background:
+    radial-gradient(ellipse 80% 26% at 85% 0%, #a5dff680, transparent),
+    radial-gradient(ellipse 65% 38% at 0% 26%, #dcd4f24d, transparent),
+    linear-gradient(165deg, #edf8ff 5%, #eff8fc 32%, #f6f3fc 62%, #eaf4f9);
+}
+
+/* Specular edges stay visible while the material underneath shows through. */
+[data-world="aero"] :is(.site-header, .hero-caption, .project-visual, .services ul, .process, .studio, .settings),
+.aero-hero .cta {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  backdrop-filter: blur(24px) saturate(1.35);
+}
+
+[data-world="aero"] .site-header {
+  width: min(calc(100% - 64px), 1280px);
+  max-width: none;
+  height: 72px;
+  margin: 20px auto 0;
+  padding: 0 14px 0 30px;
+  border-radius: 999px;
+}
+[data-world="aero"] .wordmark { color: #175379; font-size: 29px; text-shadow: none; }
+[data-world="aero"] .wordmark span { color: #24744b; }
+[data-world="aero"] .site-header nav { gap: 4px; }
+[data-world="aero"] .site-header nav a {
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  transition: background .2s var(--ease), color .2s var(--ease);
+}
+[data-world="aero"] .site-header nav a:hover { color: #164e72; background: #ffffffa6; }
+[data-world="aero"] .site-header .nav-contact {
+  gap: 16px;
+  background: #ffffff80;
+  box-shadow: inset 0 1px 0 #fff, 0 3px 10px #245a7810;
+}
+
+.aero-hero {
+  min-height: 690px;
+  padding: 88px 5% 136px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 46% 42% at 50% 27%, #fbfdffcc, transparent),
+    radial-gradient(ellipse 45% 55% at 0% 68%, #dcd2ee70, transparent),
+    radial-gradient(ellipse 34% 42% at 90% 67%, #f5d6c65c, transparent),
+    linear-gradient(180deg, #d5f0fd00 35%, #c8e7f433 80%, #edf5fc80);
+}
+.aero-hero .hero-copy { max-width: 1020px; margin: 0 auto; }
+.aero-hero h1 {
+  color: #153e59;
+  font-size: clamp(52px, 5.6vw, 82px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -.04em;
+  text-shadow: 0 2px 16px #ffffff80;
+}
+.aero-hero h1 .hero-highlight { color: #266d53; }
+.aero-hero .offer {
+  max-width: 490px;
+  margin: 28px auto 0;
+  color: #365d74;
+  font-size: 15px;
+  line-height: 1.85;
+}
+.aero-hero .cta {
+  --glass-fill: linear-gradient(135deg, #d5ffc73d, #8bd49a29 58%, #65b98147);
+  -webkit-backdrop-filter: blur(4px) saturate(1.35);
+  backdrop-filter: blur(4px) saturate(1.35);
+  position: relative;
+  gap: 22px;
+  min-height: 56px;
+  margin-top: 32px;
+  padding: 6px 7px 6px 25px;
+  border-radius: 999px;
+  color: #103b23;
+  font-size: 14px;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.aero-hero .cta svg {
+  width: 42px;
+  height: 42px;
+  padding: 12px;
+  border-radius: 50%;
+  background: #ffffff38;
+  box-shadow: inset 0 1px 0 #ffffffd9, inset 0 -1px 0 #ffffff66;
+}
+[data-world="aero"] .cta:hover { transform: translateY(-2px); box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #ffffff66, 0 16px 36px #245a781c; }
+.aero-hero .cta:active { transform: translateY(1px); }
+.aero-hero .hero-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 34px;
+  width: min(calc(100% - 64px), 1000px);
+  max-width: none;
+  margin: 0 auto;
+  padding: 12px 24px !important;
+  border-radius: 999px;
+  color: #365d74;
+}
+.aero-hero .hero-caption > span { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.aero-hero .hero-caption > span::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #347e51;
+  box-shadow: inset 0 1px 1px #ffffff73;
+}
+.aero-hero .hero-caption a { min-height: 44px; font-size: 12px; }
+.aero-hero .hero-caption a:hover { color: #0c4e77; text-decoration: underline; }
+
+/* Curved ribbons and spaced contour lines reveal the lenses without competing
+   with the copy. Clip only the decorative backdrop and travelling bubbles. */
+.aero-optics { position: absolute; inset: 0; z-index: -2; overflow: clip; pointer-events: none; }
+.aero-contours {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  mask-image: radial-gradient(ellipse 40% 32% at 50% 28%, transparent, #000 100%);
+}
+.aero-swell {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+.aero-swell--sky {
+  width: 72%; height: 125%; right: -49%; top: -29%;
+  transform: rotate(35deg);
+  background: linear-gradient(100deg, #ffffff9c 1%, #82cbed70 3%, #c7eefa40 21%, #f0fcff00 52%);
+  box-shadow: -2px 0 0 #ffffffb3, -12px 0 32px #5fb7da12;
+}
+.aero-swell--lavender {
+  width: 112%; height: 87%; left: -48%; top: 54%;
+  transform: rotate(19deg);
+  background: linear-gradient(180deg, #eee9fa99, #c8bfe866 15%, #e9e2f640 36%, #ede7fb00 65%);
+  box-shadow: 0 -1px 0 #ffffffb3, 0 -7px 22px #ab9fce12;
+}
+.aero-swell--water {
+  width: 120%; height: 78%; right: -55%; top: 67%;
+  transform: rotate(-23deg);
+  background: linear-gradient(180deg, #edfaffb3, #a6d8eb66 5%, #96cae54d 29%, #c1e8ed00 65%);
+  box-shadow: 0 -2px 0 #ffffffe6, 0 -8px 30px #8cd4e01a;
+}
+.aero-swell--light {
+  width: 124%; height: 58%; left: -3%; top: 56%;
+  transform: rotate(-21deg);
+  background: linear-gradient(180deg, #ffffff00 31%, #ffffff47 47%, #ffffffb3 49%, #e4edf51a 50%, #ffffff00 57%);
+}
+[data-world="aero"] #field { z-index: -1; visibility: hidden; }
+
+/* Optical background studies share the incumbent page and refracting bubbles. */
+.aero-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; }
+[data-backdrop="original"] .aero-backdrop { display: none; }
+[data-backdrop]:not([data-backdrop="original"]) .aero-optics { top: -112px; mask-image: linear-gradient(#000 85%, transparent); }
+[data-backdrop]:not([data-backdrop="original"]) .aero-optics > :not(.aero-backdrop) { display: none; }
+[data-world="aero"][data-backdrop]:not([data-backdrop="original"]) #site { background: #e9f4f3; }
+[data-backdrop]:not([data-backdrop="original"]) .aero-hero { background: transparent; overflow: visible; }
+[data-world="aero"][data-backdrop="glass"] #site { background: #e5edf3; }
+[data-world="aero"][data-backdrop="mist"] #site { background: #e7efec; }
+[data-world="aero"][data-backdrop="prism"] #site { background: #edf5e9; }
+[data-backdrop]:not([data-backdrop="original"]) .aero-hero :is(.offer, .hero-caption) { color: #294f66; }
+[data-backdrop]:not([data-backdrop="original"]) .site-header nav a { color: #10354c; }
+.backdrop-setting { display: grid; gap: 8px; margin-bottom: 22px; font-size: 12px; }
+.backdrop-setting select { width: 100%; min-height: 44px; border: 1px solid #bdd8e4; border-radius: 8px; padding: 0 10px; font: inherit; background: #f0f8fb; color: #153e59; }
+.backdrop-setting select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Only the lens distorts the backdrop; white rims and caustics stay crisp. */
+.aero-lens-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+.aero-bubbles { position: absolute; inset: 0; z-index: -1; overflow: clip; pointer-events: none; }
+.aero-bubble-sprites { display: none; width: 100%; height: 100%; }
+.aero-bubbles[data-flat-bubbles] > .aero-bubble-sprites { display: block; will-change: transform; }
+.aero-bubbles[data-flat-bubbles] .aero-bubble__lens { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.aero-bubble {
+  position: absolute;
+  left: 0; top: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  will-change: transform;
+}
+.aero-bubble__lens {
+  position: absolute; inset: 0 auto auto 0; border-radius: inherit;
+  width: 100%; height: 100%;
+  opacity: var(--bubble-light);
+  -webkit-backdrop-filter: var(--lens-filter);
+  backdrop-filter: var(--lens-filter);
+  background:
+    radial-gradient(circle at 40% 35%, transparent 66%, #d8e9f014 83%, #ffffff61 96%, #ffffff8c 99%),
+    radial-gradient(circle at 36% 30%,
+      hsl(var(--bubble-hue, 195) 90% 62% / calc(var(--bubble-color, .72) * .12)),
+      hsl(var(--bubble-hue, 195) 90% 57% / calc(var(--bubble-color, .72) * .3)) 58%,
+      hsl(var(--bubble-hue, 195) 85% 52% / calc(var(--bubble-color, .72) * .62)) 87%,
+      transparent 100%);
+}
+.aero-bubble::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+  border: 1px solid hsl(var(--bubble-hue, 195) 65% 53% / .58);
+  opacity: var(--bubble-light);
+  box-shadow: inset 1px 2px 2px #ffffffc9, inset -1px -2px 4px hsl(var(--bubble-hue, 195) 65% 53% / .24);
+  background:
+    radial-gradient(ellipse 33% 13% at 32% 18%, #ffffffc9, #ffffff00),
+    radial-gradient(ellipse 42% 17% at 69% 88%, #ffffff52, #ffffff00),
+    radial-gradient(circle at 45% 37%, #ffffff00 67%, #aac1d41f 86%, #ffffff99 96%, #ffffff00);
+}
+.aero-bubble::after {
+  content: '';
+  position: absolute; inset: 8% 10%; border-radius: inherit;
+  border-top: 2px solid #ffffffd9;
+  opacity: var(--bubble-light);
+  transform: rotate(-35deg);
+  mask-image: linear-gradient(90deg, transparent 3%, #000 22%, transparent 63%);
+}
+/* White specular arcs add a masked layer but disappear on Aurora's light ground. */
+[data-aero-theme="light"] .aero-bubble::after { content: none; }
+.aero-bubble--burst { will-change: auto; }
+.aero-burst-spray { position: absolute; left: 0; top: 0; pointer-events: none; }
+[data-world="aero"] .services[data-bubble-hover] { cursor: pointer; }
+[data-world="aero"] .services:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+[data-world="aero"] .work { max-width: 1440px; padding: 75px 6% 90px; background: transparent; }
+[data-world="aero"] .section-heading { align-items: end; margin-bottom: 42px; }
+[data-world="aero"] .section-heading h2 { font-size: 39px; line-height: 1.2; }
+[data-world="aero"] .section-heading p { font-size: 13px; }
+[data-world="aero"] .work-grid { grid-template-columns: 1fr 1fr; gap: 38px; align-items: start; }
+[data-world="aero"] .work-lirios { margin-top: 58px; }
+[data-world="aero"] .project-visual { padding: 8px; border-radius: 16px; transition: transform .3s var(--ease); }
+[data-world="aero"] .project-visual:hover { transform: translateY(-4px); }
+[data-world="aero"] .project-visual img { aspect-ratio: 1.5; border-radius: 8px; }
+[data-world="aero"] .window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 38px;
+  padding: 0 56px 5px;
+  font-size: 11px;
+  color: #42647a;
+}
+[data-world="aero"] .window-dots { position: absolute; left: 12px; display: flex; gap: 6px; }
+[data-world="aero"] .window-dots i { width: 8px; height: 8px; border-radius: 50%; background: #8bb9cf; box-shadow: inset 0 1px 1px #ffffffb3; }
+[data-world="aero"] .window-dots i:first-child { background: #83b59a; }
+[data-world="aero"] .window-dots i:nth-child(2) { background: #a2c4d5; }
+[data-world="aero"] .project-caption { margin-top: 22px; padding: 0 8px; }
+[data-world="aero"] .project-caption h3 { font-size: 23px; }
+[data-world="aero"] .project-caption p { font-size: 12px; }
+[data-world="aero"] .project-caption > a { font-size: 12px; }
+
+[data-world="aero"] .services { position: relative; isolation: isolate; overflow: clip; max-width: 1440px; margin: auto; padding: 80px 6% 95px; border-top: 1px solid #bdd8e480; background: transparent; }
+[data-world="aero"] .services-heading h2 { font-size: 47px; }
+[data-world="aero"] .services-heading p { font-size: 13px; }
+[data-world="aero"] .services ul {
+  padding: 8px 26px;
+  border-radius: 16px;
+  background: linear-gradient(135deg,
+    rgb(var(--services-glass-color, 255 255 255) / var(--services-glass-opacity, .18)),
+    rgb(var(--services-glass-color, 255 255 255) / var(--services-glass-opacity, .18)) 58%,
+    rgb(var(--services-glass-shade, 229 245 255) / var(--services-glass-opacity, .18)));
+  -webkit-backdrop-filter: blur(var(--services-glass-blur, 8px)) saturate(var(--services-glass-saturation, 3.6));
+  backdrop-filter: blur(var(--services-glass-blur, 8px)) saturate(var(--services-glass-saturation, 3.6));
+}
+/* The light/zero-reflection renderer supplies the same blurred colour below
+   this still-transparent film, without filtering the whole panel every frame. */
+[data-world="aero"] .services[data-cached-glass] ul { -webkit-backdrop-filter: none; backdrop-filter: none; }
+[data-world="aero"] .services li { padding: 24px 0; font-size: 19px; border-bottom: 1px solid #b9d3df80; }
+[data-world="aero"] .services li:last-child { border-bottom: 0; }
+[data-world="aero"] .services li svg { color: #24744b; opacity: 1; }
+[data-world="aero"] .process-wrap {
+  max-width: 1440px;
+  padding: 0 6% 80px;
+  --ink: #214e43;
+  --muted: #42675b;
+  --line: #b8d4c8;
+  background: transparent;
+}
+[data-world="aero"] .process { padding: 28px 32px; border-radius: 16px; gap: 26px; }
+[data-world="aero"] .process li { border: 0; padding: 0; min-height: 32px; font-size: 13px; gap: 13px; }
+[data-world="aero"] .process li span { color: #42675b; }
+[data-world="aero"] footer { padding: 75px max(6%, calc((100% - 1268px) / 2)) 32px; background: #d4eaf266; border-top: 1px solid #ffffffb3; }
+[data-world="aero"] .footer-main h2 { font-size: clamp(48px, 6vw, 80px); }
+[data-world="aero"] .footer-bottom { border-top-color: #bdd8e4; }
+
+/* In embedded mode these surfaces float over the page as a glass control dock. */
+[data-world="aero"] .studio { --accent: #146a43; border-radius: 999px; }
+[data-world="aero"] .studio-actions { gap: 3px; }
+[data-world="aero"] .studio-actions > button { border: 0; border-radius: 999px; min-height: 44px; color: #214e68; }
+[data-world="aero"] .studio-actions > button:hover,
+[data-world="aero"] .studio-actions > button[aria-expanded="true"] { background: #ffffff94; }
+[data-world="aero"] .settings { color: #153e59; border-radius: 16px; background-color: #f0f8fbe6; }
+[data-world="aero"] .parameter-group { border: 0; min-width: 0; margin: 0; padding: 0; }
+[data-world="aero"] .parameter-group + .parameter-group { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+[data-world="aero"] .parameter-group legend { padding: 0; font-size: 13px; font-weight: 500; }
+[data-world="aero"] .parameter-hint { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+[data-world="aero"] .glass-preview-link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--accent); font-size: 12px; text-underline-offset: 3px; }
+[data-world="aero"] .glass-preview-link svg { width: 14px; height: 14px; }
+[data-world="aero"] .parameter-group input { height: 32px; }
+[data-world="aero"] .settings-heading p,
+[data-world="aero"] .settings-note { color: #42647a; }
+[data-world="aero"] .settings-heading button { min-height: 44px; width: 44px; margin: -7px -7px 0 0; }
+[data-world="aero"] .parameter output { color: #28604d; }
+[data-world="aero"] .parameter input { min-height: 32px; }
+[data-world="aero"] .settings-actions button { border-radius: 999px; }
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .aero-hero { padding-top: 85px; min-height: 660px; }
+  .aero-hero h1 { font-size: clamp(48px, 6.4vw, 66px); }
+  [data-world="aero"] .site-header { width: calc(100% - 40px); }
+  [data-world="aero"] .section-heading h2 { font-size: 32px; }
+  [data-world="aero"] .services-heading h2 { font-size: 39px; }
+  [data-world="aero"] .process { gap: 15px; padding: 24px; }
+  [data-world="aero"] .process li { font-size: 12px; gap: 8px; }
+}
+
+@media (max-width: 700px) {
+  [data-backdrop]:not([data-backdrop="original"]) .aero-optics { top: -92px; }
+  [data-world="aero"] .site-header { height: 64px; width: calc(100% - 28px); margin-top: 14px; padding: 0 8px 0 19px; }
+  [data-world="aero"] .wordmark { font-size: 25px; }
+  [data-world="aero"] .site-header nav { gap: 0; }
+  [data-world="aero"] .site-header nav a { padding: 0 12px; font-size: 11px; gap: 9px; }
+  .aero-hero { min-height: 650px; padding: 68px 24px 150px; }
+  .aero-hero h1 { font-size: clamp(39px, 10vw, 61px); line-height: 1.14; letter-spacing: -.04em; }
+  .aero-hero h1 br { display: none; }
+  .aero-hero .offer { margin-top: 25px; font-size: 13px; line-height: 1.85; max-width: 310px; }
+  .aero-hero .cta { margin-top: 28px; min-height: 54px; font-size: 13px; gap: 18px; padding: 5px 6px 5px 22px; }
+  .aero-hero .hero-caption { left: 0; right: 0; bottom: 28px; width: calc(100% - 40px); padding: 10px 18px !important; flex-direction: column; gap: 0; border-radius: 24px; }
+  .aero-hero .hero-caption > span { font-size: 12px; }
+  .aero-hero .hero-caption a { min-height: 44px; font-size: 12px; }
+  .aero-swell--sky { width: 110%; right: -94%; top: -5%; }
+  .aero-swell--lavender { width: 190%; height: 61%; left: -133%; top: 66%; transform: rotate(25deg); }
+  .aero-swell--water { width: 175%; height: 54%; right: -117%; top: 75%; }
+  .aero-swell--light { width: 200%; left: -50%; top: 62%; transform: rotate(-32deg); }
+  [data-world="aero"] .work { padding: 48px 22px 55px; }
+  [data-world="aero"] .section-heading { display: block; margin-bottom: 30px; }
+  [data-world="aero"] .section-heading h2 { font-size: 30px; }
+  [data-world="aero"] .section-heading p { font-size: 12px; margin-top: 14px; }
+  [data-world="aero"] .work-grid { grid-template-columns: 1fr; gap: 36px; }
+  [data-world="aero"] .work-lirios { margin-top: 0; }
+  [data-world="aero"] .project-visual { padding: 6px; }
+  [data-world="aero"] .window-bar { height: 33px; padding: 0 38px 4px; }
+  [data-world="aero"] .window-dots { left: 8px; gap: 4px; }
+  [data-world="aero"] .window-dots i { width: 6px; height: 6px; }
+  [data-world="aero"] .project-caption { padding: 0 4px; margin-top: 16px; gap: 8px; }
+  [data-world="aero"] .project-caption h3 { font-size: 20px; }
+  [data-world="aero"] .project-caption p { font-size: 12px; }
+  [data-world="aero"] .project-caption > a { font-size: 11px; gap: 6px; }
+  [data-world="aero"] .services { grid-template-columns: 1fr; padding: 50px 22px; gap: 30px; }
+  [data-world="aero"] .services-heading h2 { font-size: 37px; }
+  [data-world="aero"] .services ul { padding: 4px 20px; }
+  [data-world="aero"] .services li { font-size: 17px; padding: 22px 0; }
+  [data-world="aero"] .process-wrap { padding: 0 22px 50px; }
+  [data-world="aero"] .process { grid-template-columns: 1fr 1fr; gap: 24px 15px; padding: 25px 20px; }
+  [data-world="aero"] .process li { font-size: 11px; gap: 9px; }
+  [data-world="aero"] footer { padding: 55px 22px 26px; }
+  [data-world="aero"] .footer-main h2 { font-size: clamp(43px, 11vw, 60px); }
+}
+
+@media (max-width: 350px) {
+  [data-world="aero"] .site-header { padding-left: 15px; }
+  [data-world="aero"] .site-header nav a { padding: 0 10px; }
+  [data-world="aero"] .site-header nav a:first-child { display: none; }
+  .aero-hero { padding-left: 20px; padding-right: 20px; }
+  .aero-hero h1 { font-size: 37px; }
+  [data-world="aero"] .project-caption { align-items: start; flex-direction: column; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-world="aero"] :is(.site-header, .hero-caption, .project-visual, .services ul, .process, .studio, .settings) { background: #f0f8fbf5; }
+  [data-world="aero"] .cta { background: #def0d9; }
+  .aero-bubble__lens { background-color: #ecf4fa26; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  [data-world="aero"] :is(.site-header, .hero-caption, .project-visual, .services ul, .process, .studio, .settings) { background: #f0f8fb; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  [data-world="aero"] .cta { background: #def0d9; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .aero-bubble__lens { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aero-hero .cta:hover, [data-world="aero"] .project-visual:hover { transform: none; }
+}

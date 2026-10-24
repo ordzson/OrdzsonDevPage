@@ -1,0 +1,38 @@
+/* Shared preview controls; each proposal keeps its original visual identity. */
+:root { scroll-padding-top: 20px; }
+.explorer { display: none; }
+.studio {
+  position: fixed;
+  inset: auto 20px 18px auto;
+  height: auto;
+  padding: 0;
+  gap: 0;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px #0b201d26;
+}
+.studio-brand, .world-picker { display: none; }
+.studio-actions { padding: 5px; }
+.studio-actions > button { min-height: 42px; }
+.settings {
+  top: auto;
+  bottom: 85px;
+  max-height: calc(100dvh - 105px);
+}
+.parameter-dock .parameter-content { max-height: calc(100dvh - 200px); overflow: auto; }
+.skip-link, .skip { top: 8px; }
+.tuning-panel { max-height: calc(100dvh - 95px); overflow: auto; }
+.tuning-panel label { grid-template-columns: 1fr; gap: 3px; padding: 5px 0; }
+.tuning-panel label > span { display: flex; justify-content: space-between; gap: 12px; }
+.tuning-panel output { font-variant-numeric: tabular-nums; color: #deeee1; }
+.shard-actions { display: flex; gap: 12px; justify-content: space-between; margin-top: 12px; }
+.shard-actions button { min-height: 40px; border: 0; padding: 0; background: transparent; color: #deeee1; font-size: 11px; }
+.tuning-panel #save-note { margin: 6px 0 0; font-size: 11px; line-height: 1.6; color: #a9c0af; }
+.tuning-panel #save-note:empty { display: none; }
+@media (max-width: 700px) {
+  .studio { right: 12px; bottom: 13px; height: auto; padding: 0; }
+  .studio-actions > button { height: 42px; }
+  .studio-actions #pause { width: 42px; }
+  .settings { top: auto; bottom: 77px; max-height: calc(100dvh - 92px); }
+  .parameter-dock .parameter-content { max-height: calc(100dvh - 195px); }
+}
