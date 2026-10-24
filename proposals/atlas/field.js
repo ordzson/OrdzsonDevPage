@@ -77,9 +77,7 @@ export class ParticleField {
     this.width = Math.max(1, this.canvas.clientWidth);
     this.height = Math.max(1, this.canvas.clientHeight);
     this.mobile = innerWidth <= 700;
-    // Upscaled bubble sprites blur their 1px rims into thick grey rings on
-    // phone screens, so Aero renders them at the native pixel density.
-    this.ratio = Math.min(devicePixelRatio || 1, this.world === 'aero' ? 3 : 1.75);
+    this.ratio = Math.min(devicePixelRatio || 1, 1.75);
     // Aero owns its bubble surface; this shared canvas only measures the section.
     this.canvas.width = this.world === 'aero' ? 1 : Math.round(this.width * this.ratio);
     this.canvas.height = this.world === 'aero' ? 1 : Math.round(this.height * this.ratio);
